@@ -1,0 +1,10 @@
+.modalchildren {
+  max-height: 80vh;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none; /* for Firefox */
+  overflow: scroll; 
+}
+
+.modalchildren::-webkit-scrollbar {
+  display: none;
+}
