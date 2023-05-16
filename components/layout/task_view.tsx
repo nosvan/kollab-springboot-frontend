@@ -17,6 +17,7 @@ import { TbClock } from 'react-icons/tb';
 import { MdDateRange } from 'react-icons/md';
 import axios from 'axios';
 import { ItemApiRoutes, ListApiRoutes } from 'lib/api/api_routes';
+import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
 
 interface TaskViewProps {
   dayLayout: number;
@@ -41,9 +42,9 @@ export default function TaskView(props: TaskViewProps) {
     return items
       .filter((itemA) => {
         if (
-          itemA.date_tz_insensitive &&
-          !itemA.date_range_flag &&
-          itemA.date_tz_insensitive == dayInYYYYMMDD
+          itemA.dateTzInsensitive &&
+          !itemA.dateRangeFlag &&
+          itemA.dateTzInsensitive == dayInYYYYMMDD
         ) {
           return true;
         } else {
@@ -57,7 +58,7 @@ export default function TaskView(props: TaskViewProps) {
             onClick={() => handleItemClick(itemB)}
             className={`flex flex-row items-center space-x-0.5 rounded-md
             justify-start text-black ${itemTypeStyling(
-              itemB.item_type
+              itemB.itemType
             )} cursor-pointer ${styles.mobilePadding}`}
           >
             <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
@@ -78,9 +79,9 @@ export default function TaskView(props: TaskViewProps) {
     return items
       .filter((itemA) => {
         if (
-          itemA.date_tz_insensitive &&
-          itemA.date_range_flag &&
-          itemA.date_tz_insensitive == dayInYYYYMMDD
+          itemA.dateTzInsensitive &&
+          itemA.dateRangeFlag &&
+          itemA.dateTzInsensitive == dayInYYYYMMDD
         ) {
           return true;
         } else {
@@ -94,7 +95,7 @@ export default function TaskView(props: TaskViewProps) {
             onClick={() => handleItemClick(itemB)}
             className={`flex flex-row items-center space-x-0.5 rounded-md
             justify-start text-black ${itemTypeStyling(
-              itemB.item_type
+              itemB.itemType
             )} cursor-pointer ${styles.mobilePadding}`}
           >
             <MdDateRange className={`${styles.iconStyle}`}></MdDateRange>
@@ -115,9 +116,9 @@ export default function TaskView(props: TaskViewProps) {
     return items
       .filter((itemA) => {
         if (
-          itemA.date_tz_sensitive &&
-          !itemA.date_range_flag &&
-          dateToYYYYMMDD(itemA.date_tz_sensitive) == dayInYYYYMMDD
+          itemA.dateTzSensitive &&
+          !itemA.dateRangeFlag &&
+          dateToYYYYMMDD(itemA.dateTzSensitive) == dayInYYYYMMDD
         ) {
           return true;
         } else {
@@ -131,7 +132,7 @@ export default function TaskView(props: TaskViewProps) {
             onClick={() => handleItemClick(itemB)}
             className={`flex flex-row items-center space-x-0.5 rounded-md
             justify-start text-black ${itemTypeStyling(
-              itemB.item_type
+              itemB.itemType
             )} cursor-pointer ${styles.mobilePadding}`}
           >
             <span className="flex flex-row">
@@ -157,9 +158,9 @@ export default function TaskView(props: TaskViewProps) {
     return items
       .filter((itemA) => {
         if (
-          itemA.date_tz_sensitive &&
-          itemA.date_range_flag &&
-          dateToYYYYMMDD(itemA.date_tz_sensitive) == dayInYYYYMMDD
+          itemA.dateTzSensitive &&
+          itemA.dateRangeFlag &&
+          dateToYYYYMMDD(itemA.dateTzSensitive) == dayInYYYYMMDD
         ) {
           return true;
         } else {
@@ -173,7 +174,7 @@ export default function TaskView(props: TaskViewProps) {
             onClick={() => handleItemClick(itemB)}
             className={`flex flex-row items-center space-x-0.5 rounded-md
             justify-start text-black ${itemTypeStyling(
-              itemB.item_type
+              itemB.itemType
             )} cursor-pointer ${styles.mobilePadding}`}
           >
             <span className="flex flex-row">
@@ -271,10 +272,12 @@ export default function TaskView(props: TaskViewProps) {
     try {
       return axios({
         method: 'GET',
-        url: ItemApiRoutes.GET_ITEM,
+        url: SpringItemApiRoutes.ITEM_GET,
+        headers: { 'Content-Type': 'application/json' },
         params: {
-          item_id: item.id,
+          itemId: item.id,
         },
+        withCredentials: true,
       }).then((res) => {
         return res.data;
       });

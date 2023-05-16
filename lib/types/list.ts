@@ -4,28 +4,28 @@ export type list = {
   id: number;
   name: string;
   description?: string;
-  owner_id: number;
+  ownerId: number;
   passcode: string;
-  created_at: Date;
+  createdAt: Date;
 };
 
 export type ListRegister = {
   name: string;
   description?: string;
   passcode: string;
-  confirm_passcode: string;
+  confirmPasscode: string;
 };
 
 export type ListJoinClient = {
-  list_id: string;
+  listId: string;
   passcode: string;
-  confirm_passcode: string;
+  confirmPasscode: string;
 };
 
 export type ListJoin = {
-  list_id: number;
+  listId: number;
   passcode: string;
-  confirm_passcode: string;
+  confirmPasscode: string;
 };
 
 // return type from server
@@ -33,8 +33,8 @@ export type ListSafe = {
   id: number;
   name: string;
   description?: string;
-  owner_id: number;
-  created_at?: Date;
+  ownerId: number;
+  createdAt?: Date;
 };
 
 // type for redux state
@@ -47,13 +47,13 @@ export type ListSliceState = {
 };
 
 export type UsersWithPermissionForList = {
-  user_id: number;
-  first_name: string;
-  last_name: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
   email: string;
 };
 
 export type CheckDataItem = {
-  user_id: number;
+  userId: number;
   isChecked: boolean;
 };

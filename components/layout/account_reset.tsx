@@ -15,19 +15,19 @@ export default function AccountReset(props: AccountResetProps) {
 
   const yupValidationSchema = Yup.object().shape({
     email: Yup.string().email('invalid email').required('email required'),
-    confirm_email: Yup.string()
+    confirmEmail: Yup.string()
       .required()
       .oneOf([Yup.ref('email')], 'emails must match'),
   });
 
   const [yupErrors, setYupErrors] = useState({
     email: false,
-    confirm_email: false,
+    confirmEmail: false,
   });
 
   const [formValues, setFormValues] = useState({
     email: '',
-    confirm_email: '',
+    confirmEmail: '',
   });
 
   const modalSpring = useSpring({
@@ -72,21 +72,21 @@ export default function AccountReset(props: AccountResetProps) {
               <input
                 className="text-white bg-stone-800 rounded-xl px-2"
                 type="text"
-                value={formValues.confirm_email}
+                value={formValues.confirmEmail}
                 onChange={(event) => {
                   setFormValues({
                     ...formValues,
-                    confirm_email: event.target.value,
+                    confirmEmail: event.target.value,
                   });
                 }}
                 onFocus={() => {
                   setYupErrors({
                     ...yupErrors,
-                    confirm_email: false,
+                    confirmEmail: false,
                   });
                 }}
               />
-              {yupErrors.confirm_email && (
+              {yupErrors.confirmEmail && (
                 <span className="px-1 text-red-500 text-sm">
                   emails must match
                 </span>

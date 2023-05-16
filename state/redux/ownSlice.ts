@@ -8,17 +8,17 @@ const initialState: OwnSliceState = {
     name: '',
     description: '',
     category: undefined,
-    category_id: undefined,
-    item_type: ItemType.GENERAL,
-    date_tz_sensitive: undefined,
-    date_tz_sensitive_end: undefined,
-    time_sensitive_flag: false,
-    date_range_flag: false,
-    date_tz_insensitive: undefined,
-    date_tz_insensitive_end: undefined,
-    permission_level: VisibilityLevel.PUBLIC,
-    created_by_id: -999,
-    last_modified_by_id: -999,
+    categoryId: undefined,
+    itemType: ItemType.GENERAL,
+    dateTzSensitive: undefined,
+    dateTzSensitiveEnd: undefined,
+    timeSensitiveFlag: false,
+    dateRangeFlag: false,
+    dateTzInsensitive: undefined,
+    dateTzInsensitiveEnd: undefined,
+    permissionLevel: VisibilityLevel.PUBLIC,
+    createdById: -999,
+    lastModifiedById: -999,
     active: false,
   },
   items: [],
@@ -38,14 +38,9 @@ export const ownSlice = createSlice({
     },
     setAdditionalOwnItems: (state, action) => {
       state.items = state.items.filter((item: ItemSafe) => {
-        const itemFoundToRemove = action.payload.find(
-          (itemToRemove: ItemSafe) => {
-            return item.id === itemToRemove.id;
-          }
-        );
-        return !itemFoundToRemove;
+        return item.id !== action.payload.id;
       });
-      state.items = [...state.items, ...action.payload];
+      state.items.push(action.payload);
     },
     setViewOwnItemMode: (state, action) => {
       state.viewOwnItemMode = action.payload;

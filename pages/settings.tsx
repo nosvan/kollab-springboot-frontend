@@ -1,7 +1,5 @@
 import { animated, useSpring } from '@react-spring/web';
 import { Layout } from 'components/layout/layout';
-import { withIronSessionSsr } from 'iron-session/next';
-import { sessionOptions } from 'lib/iron_session';
 import { UserSafe } from 'lib/types/user';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -14,7 +12,7 @@ export default function Settings({ user }: { user: UserSafe }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
+    if (!true) {
       router.push('/');
       return;
     }
@@ -51,25 +49,3 @@ export default function Settings({ user }: { user: UserSafe }) {
     </Layout>
   );
 }
-
-export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps({ req }) {
-    const session = req.session;
-    let user: UserSafe = {
-      id: -999,
-      first_name: '',
-      last_name: '',
-      email: '',
-      isLoggedIn: false,
-    };
-    if (session.userSession) {
-      user = session.userSession;
-    }
-    return {
-      props: {
-        user,
-      },
-    };
-  },
-  sessionOptions
-);

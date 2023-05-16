@@ -38,6 +38,7 @@ import { CheckDataItem, UsersWithPermissionForList } from 'lib/types/list';
 import { TbPaperclip, TbX } from 'react-icons/tb';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { storage } from 'utils/firebaseConfig';
+import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
 
 interface NewItemProps {
   selectedDate?: Date;
@@ -119,23 +120,23 @@ export default function NewItem(props: NewItemProps) {
     return new Date();
   });
 
-  const initialFormState = {
+  const initialFormState: CreateItem = {
     name: '',
     category: itemCategory ?? undefined,
-    category_id: itemCategory ? getCategoryId() : undefined,
+    categoryId: itemCategory ? getCategoryId() : undefined,
     description: undefined,
-    item_type: ItemType.GENERAL,
-    date_tz_sensitive: selectedDateForNewItem,
-    date_tz_sensitive_end: selectedDateForNewItem,
-    time_sensitive_flag: timeControlChecked,
-    date_range_flag: dateRangeControlChecked,
-    date_tz_insensitive: selectedDateForNewItemFormattedYYYYMMDD,
-    date_tz_insensitive_end: selectedDateForNewItemFormattedYYYYMMDD,
-    last_modified_by_id: userState.user.id,
-    permission_level: itemCategory
+    itemType: ItemType.GENERAL,
+    dateTzSensitive: selectedDateForNewItem,
+    dateTzSensitiveEnd: selectedDateForNewItem,
+    timeSensitiveFlag: timeControlChecked,
+    dateRangeFlag: dateRangeControlChecked,
+    dateTzInsensitive: selectedDateForNewItemFormattedYYYYMMDD,
+    dateTzInsensitiveEnd: selectedDateForNewItemFormattedYYYYMMDD,
+    lastModifiedBy: userState.user.id,
+    permissionLevel: itemCategory
       ? VisibilityLevel.PUBLIC
       : VisibilityLevel.PRIVATE,
-    items_permissions: undefined,
+    itemPermissions: undefined,
   };
 
   const [formValues, setFormValues] = useState<CreateItem>(initialFormState);
@@ -184,18 +185,18 @@ export default function NewItem(props: NewItemProps) {
       setFormValues((prevState) => {
         return {
           ...prevState,
-          time_sensitive_flag: true,
-          date_tz_sensitive: newDate,
-          date_tz_sensitive_end: newDateEnd,
+          timeSensitiveFlag: true,
+          dateTzSensitive: newDate,
+          dateTzSensitiveEnd: newDateEnd,
         };
       });
     } else {
       setFormValues((prevState) => {
         return {
           ...prevState,
-          time_sensitive_flag: false,
-          date_tz_insensitive: datePart,
-          date_tz_insensitive_end: datePartEnd,
+          timeSensitiveFlag: false,
+          dateTzInsensitive: datePart,
+          dateTzInsensitiveEnd: datePartEnd,
         };
       });
     }
@@ -205,7 +206,7 @@ export default function NewItem(props: NewItemProps) {
     setFormValues((prevState) => {
       return {
         ...prevState,
-        date_range_flag: dateRangeControlChecked,
+        dateRangeFlag: dateRangeControlChecked,
       };
     });
   }, [dateRangeControlChecked]);
@@ -215,7 +216,7 @@ export default function NewItem(props: NewItemProps) {
       setFormValues((prevState) => {
         return {
           ...prevState,
-          permission_level: VisibilityLevel.PUBLIC,
+          permissionLevel: VisibilityLevel.PUBLIC,
         };
       });
     }
@@ -231,7 +232,7 @@ export default function NewItem(props: NewItemProps) {
         const mappedResData = res.data.map(
           (user: UsersWithPermissionForList) => {
             return {
-              user_id: user.user_id,
+              userId: user.userId,
               isChecked: false,
             };
           }
@@ -243,7 +244,7 @@ export default function NewItem(props: NewItemProps) {
       setFormValues((prevState) => {
         return {
           ...prevState,
-          permission_level: VisibilityLevel.PRIVATE,
+          permissionLevel: VisibilityLevel.PRIVATE,
           item_permissions: [],
         };
       });
@@ -280,31 +281,31 @@ export default function NewItem(props: NewItemProps) {
   const yupValidationSchema = Yup.object({
     name: Yup.string().required('name is required'),
     category: Yup.mixed<Category>().oneOf(Object.values(Category)),
-    category_id: formValues.category ? Yup.number().required() : Yup.number(),
-    item_type: Yup.mixed<ItemType>()
+    categoryId: formValues.category ? Yup.number().required() : Yup.number(),
+    itemType: Yup.mixed<ItemType>()
       .oneOf(Object.values(ItemType))
       .default(ItemType.ASSIGNMENT),
-    permission_level: Yup.mixed<VisibilityLevel>()
+    permissionLevel: Yup.mixed<VisibilityLevel>()
       .oneOf(Object.values(VisibilityLevel))
       .default(VisibilityLevel.PUBLIC),
     description: Yup.string(),
-    date_tz_sensitive: timeControlChecked ? Yup.date() : Yup.date(),
-    date_tz_sensitive_end: timeControlChecked
+    dateTzSensitive: timeControlChecked ? Yup.date() : Yup.date(),
+    dateTzSensitiveEnd: timeControlChecked
       ? dateRangeControlChecked
         ? Yup.date()
             .min(
-              Yup.ref('date_tz_sensitive'),
+              Yup.ref('dateTzSensitive'),
               'end date must be after start date'
             )
             .required('end date is required')
         : Yup.date()
       : Yup.date(),
-    time_sensitive_flag: Yup.boolean().required(),
-    date_range_flag: Yup.boolean().required(),
-    date_tz_insensitive: timeControlChecked
+    timeSensitiveFlag: Yup.boolean().required(),
+    dateRangeFlag: Yup.boolean().required(),
+    dateTzInsensitive: timeControlChecked
       ? Yup.string()
       : Yup.string().required('date is required'),
-    date_tz_insensitive_end: timeControlChecked
+    dateTzInsensitiveEnd: timeControlChecked
       ? Yup.string()
       : dateRangeControlChecked
       ? Yup.string()
@@ -313,33 +314,33 @@ export default function NewItem(props: NewItemProps) {
             'end date must be after start date',
             function () {
               return dateRangeValid(
-                this.parent['date_tz_insensitive'],
-                this.parent['date_tz_insensitive_end']
+                this.parent['dateTzInsensitive'],
+                this.parent['dateTzInsensitiveEnd']
               );
             }
           )
           .required('end date is required')
       : Yup.string(),
-    last_modified_by_id: Yup.number(),
+    lastModifiedById: Yup.number(),
   });
 
   const [yupValidationError, setYupValidationError] =
     useState<ItemYupValidationError>({
       name: false,
       category: false,
-      category_id: false,
-      item_type: false,
-      permission_level: false,
+      categoryId: false,
+      itemType: false,
+      permissionLevel: false,
       description: false,
-      date_tz_sensitive: false,
-      date_tz_sensitive_end: false,
-      time_tz_sensitive: false,
-      time_tz_sensitive_end: false,
-      time_sensitive_flag: false,
-      date_range_flag: false,
-      date_tz_insensitive: false,
-      date_tz_insensitive_end: false,
-      last_modified_by_id: false,
+      dateTzSensitive: false,
+      dateTzSensitiveEnd: false,
+      timeTzSensitive: false,
+      timeTzSensitiveEnd: false,
+      timeSensitiveFlag: false,
+      dateRangeFlag: false,
+      dateTzInsensitive: false,
+      dateTzInsensitiveEnd: false,
+      lastModifiedById: false,
     });
 
   return (
@@ -347,7 +348,7 @@ export default function NewItem(props: NewItemProps) {
       <form onSubmit={handleCreateItemFormSubmit}>
         <div className="flex flex-col text-sm space-y-2 p-2 bg-stone-900 border-b-2 rounded-xl border-blue-700">
           <div className="py-1 text-3xl">
-            Create {formValues.date_range_flag ? 'an Event' : 'a Task'}
+            Create {formValues.dateRangeFlag ? 'an Event' : 'a Task'}
           </div>
           <span className="flex flex-row items-center space-x-1">
             <span
@@ -374,16 +375,16 @@ export default function NewItem(props: NewItemProps) {
                 <span
                   key={key}
                   className={`${
-                    formValues.item_type ==
+                    formValues.itemType ==
                     ItemType[key as keyof typeof ItemType]
-                      ? `text-black ${itemTypeStyling(formValues.item_type)}`
+                      ? `text-black ${itemTypeStyling(formValues.itemType)}`
                       : 'bg-stone-800 hover:bg-stone-700 text-white'
                   }
                   )} text-sm p-1 my-0.5 mr-0.5 cursor-pointer rounded-xl`}
                   onClick={() =>
                     setFormValues({
                       ...formValues,
-                      item_type: ItemType[key as keyof typeof ItemType],
+                      itemType: ItemType[key as keyof typeof ItemType],
                     })
                   }
                 >
@@ -543,11 +544,16 @@ export default function NewItem(props: NewItemProps) {
       try {
         await axios({
           method: 'post',
-          url: ListApiRoutes.NEW_ITEM,
+          url: SpringItemApiRoutes.ITEM_CREATE,
           data: JSON.stringify(formValues),
           headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
         }).then(async (res) => {
-          if (res.data.length > 0 && res.data[0].category) {
+          if (
+            res.status === 200 &&
+            res.data.length > 0 &&
+            res.data[0].category
+          ) {
             if (res.data[0].category === Category.LIST) {
               dispatch(setAdditionalListItems(res.data));
               if (fileSelected) {
@@ -566,11 +572,12 @@ export default function NewItem(props: NewItemProps) {
       try {
         await axios({
           method: 'post',
-          url: OwnApiRoutes.NEW_ITEM,
+          url: SpringItemApiRoutes.ITEM_CREATE,
           data: JSON.stringify(formValues),
           headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
         }).then(async (res) => {
-          if (res.data.length > 0) {
+          if (res.status === 200) {
             dispatch(setAdditionalOwnItems(res.data));
             if (fileSelected) {
               console.log('uploading attachment');

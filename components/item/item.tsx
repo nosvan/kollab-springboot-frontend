@@ -15,6 +15,7 @@ import { listAll, ref } from 'firebase/storage';
 import React from 'react';
 import { ListSliceState } from 'lib/types/list';
 import { OwnSliceState } from 'lib/types/own';
+import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
 
 export interface ItemProps {
   item: ItemSafe;
@@ -46,7 +47,7 @@ export default function Item(props: ItemProps) {
   return (
     <div
       className={`flex flex-col text-sm space-y-2 pt-2 pb-5 px-2 bg-stone-900 border-b-2 rounded-xl ${itemBorder(
-        item.item_type
+        item.itemType
       )}`}
     >
       <div className="flex flex-row items-center justify-end space-x-1">
@@ -70,9 +71,6 @@ export default function Item(props: ItemProps) {
                 onClick={() => setActiveStatus(!activeStatus)}
               ></TbSquareCheck>
             )}
-            {/* {itemMode !== ItemMode.EDIT && (
-              <TbSquareCheck className={`${styles.iconStyle}`}></TbSquareCheck>
-            )} */}
           </React.Fragment>
         )}
         {activeStatus && (
@@ -83,9 +81,6 @@ export default function Item(props: ItemProps) {
                 onClick={() => setActiveStatus(!activeStatus)}
               ></TbSquare>
             )}
-            {/* {itemMode !== ItemMode.EDIT && (
-              <TbSquare className={`${styles.iconStyle}`}></TbSquare>
-            )} */}
           </React.Fragment>
         )}
       </div>
@@ -110,15 +105,15 @@ export default function Item(props: ItemProps) {
   );
 
   async function handleDelete() {
-    const body = {
-      item_id: item.id,
-    };
     try {
       await axios({
         method: 'delete',
-        url: ItemApiRoutes.DELETE,
-        data: JSON.stringify(body),
+        url: SpringItemApiRoutes.ITEM_DELETE,
+        params: {
+          itemId: item.id,
+        },
         headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
       }).then((res) => {
         switch (item.category) {
           case Category.LIST:

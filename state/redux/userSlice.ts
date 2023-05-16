@@ -2,13 +2,13 @@ import { createSlice } from '@reduxjs/toolkit';
 import { UserSliceState } from 'lib/types/user';
 
 const initialState: UserSliceState = {
-  user:  {
+  user: {
     id: -999,
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     isLoggedIn: false,
-    currentTab: ''
+    currentTab: '',
   },
   createNewTypeMode: false,
   createNewItemMode: false,
@@ -19,7 +19,7 @@ export const userSlice = createSlice({
   initialState: initialState,
   reducers: {
     setUserState: (state, action) => {
-      state.user = {...state.user, ...action.payload}
+      state.user = { ...state.user, ...action.payload };
     },
     setLoggedInStatus: (state, action) => {
       state.user.isLoggedIn = action.payload;
@@ -34,14 +34,20 @@ export const userSlice = createSlice({
       state.createNewItemMode = action.payload;
     },
     resetUserState: (state) => {
-      state.user = {...initialState.user};
+      state.user = { ...initialState.user };
       state.createNewItemMode = false;
       state.createNewTypeMode = false;
-    }
+    },
   },
 });
 
-export const { setUserState, setLoggedInStatus, setCurrentTab, setCreateNewTypeMode, setCreateNewItemMode, resetUserState} =
-  userSlice.actions;
+export const {
+  setUserState,
+  setLoggedInStatus,
+  setCurrentTab,
+  setCreateNewTypeMode,
+  setCreateNewItemMode,
+  resetUserState,
+} = userSlice.actions;
 
 export default userSlice.reducer;

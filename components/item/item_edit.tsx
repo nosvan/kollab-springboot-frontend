@@ -64,33 +64,31 @@ export default function ItemEdit(props: ItemEditProps) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [visibilityControlCheck, setVisibilityControlCheck] = useState<boolean>(
     () => {
-      if (item.permission_level === VisibilityLevel.PRIVATE) return true;
+      if (item.permissionLevel === VisibilityLevel.PRIVATE) return true;
       else return false;
     }
   );
   const [timeControlChecked, setTimeControlChecked] = useState(() => {
-    if (item.time_sensitive_flag) return true;
+    if (item.timeSensitiveFlag) return true;
     else return false;
   });
   const [dateRangeControlChecked, setDateRangeControlChecked] = useState(() => {
-    if (item.date_range_flag) return true;
+    if (item.dateRangeFlag) return true;
     else return false;
   });
 
   const [datePart, setDatePart] = useState(() => {
-    if (item.time_sensitive_flag) {
-      const date = dateToYYYYMMDD(
-        item.date_tz_sensitive ?? new Date(Date.now())
-      );
+    if (item.timeSensitiveFlag) {
+      const date = dateToYYYYMMDD(item.dateTzSensitive ?? new Date(Date.now()));
       return date;
     } else {
-      return item.date_tz_insensitive ?? dateToYYYYMMDD(new Date(Date.now()));
+      return item.dateTzInsensitive ?? dateToYYYYMMDD(new Date(Date.now()));
     }
   });
   const [timePart, setTimePart] = useState(() => {
     const time = () => {
-      if (item.date_tz_sensitive) {
-        return getTimeHourMinuteString(item.date_tz_sensitive);
+      if (item.dateTzSensitive) {
+        return getTimeHourMinuteString(item.dateTzSensitive);
       } else {
         return getTimeCeiling(new Date(Date.now()), 30);
       }
@@ -98,21 +96,19 @@ export default function ItemEdit(props: ItemEditProps) {
     return time();
   });
   const [datePartEnd, setDatePartEnd] = useState(() => {
-    if (item.time_sensitive_flag) {
+    if (item.timeSensitiveFlag) {
       const date = dateToYYYYMMDD(
-        item.date_tz_sensitive_end ?? new Date(Date.now())
+        item.dateTzSensitiveEnd ?? new Date(Date.now())
       );
       return date;
     } else {
-      return (
-        item.date_tz_insensitive_end ?? dateToYYYYMMDD(new Date(Date.now()))
-      );
+      return item.dateTzInsensitiveEnd ?? dateToYYYYMMDD(new Date(Date.now()));
     }
   });
   const [timePartEnd, setTimePartEnd] = useState(() => {
     const time = () => {
-      if (item.date_tz_sensitive_end) {
-        return getTimeHourMinuteString(item.date_tz_sensitive_end);
+      if (item.dateTzSensitiveEnd) {
+        return getTimeHourMinuteString(item.dateTzSensitiveEnd);
       } else {
         return getTimeCeiling(new Date(Date.now()), 30);
       }
@@ -132,17 +128,17 @@ export default function ItemEdit(props: ItemEditProps) {
     name: item.name,
     description: item.description,
     category: item.category,
-    category_id: item.category_id,
-    item_type: ItemType[item.item_type as keyof typeof ItemType],
-    date_tz_insensitive: item.date_tz_insensitive,
-    date_tz_insensitive_end: item.date_tz_insensitive_end,
-    time_sensitive_flag: item.time_sensitive_flag,
-    date_tz_sensitive: item.date_tz_sensitive,
-    date_tz_sensitive_end: item.date_tz_sensitive_end,
-    date_range_flag: item.date_range_flag,
-    permission_level:
-      VisibilityLevel[item.permission_level as keyof typeof VisibilityLevel],
-    item_permissions: [],
+    categoryId: item.categoryId,
+    itemType: ItemType[item.itemType as keyof typeof ItemType],
+    dateTzInsensitive: item.dateTzInsensitive,
+    dateTzInsensitiveEnd: item.dateTzInsensitiveEnd,
+    timeSensitiveFlag: item.timeSensitiveFlag,
+    dateTzSensitive: item.dateTzSensitive,
+    dateTzSensitiveEnd: item.dateTzSensitiveEnd,
+    dateRangeFlag: item.dateRangeFlag,
+    permissionLevel:
+      VisibilityLevel[item.permissionLevel as keyof typeof VisibilityLevel],
+    itemPermissions: [],
     active: activeStatus,
   });
 
@@ -204,14 +200,14 @@ export default function ItemEdit(props: ItemEditProps) {
         method: 'get',
         url: ListApiRoutes.LIST_USERS,
         params: {
-          list_id: item.category_id,
+          list_id: item.categoryId,
         },
       }).then((res) => {
         setUsersWithPermissionToList(res.data);
         const resDataMapped: CheckDataItem[] = res.data.map(
           (user: UsersWithPermissionForList) => {
             return {
-              user_id: user.user_id,
+              userId: user.userId,
               isChecked: false,
             };
           }
@@ -231,7 +227,7 @@ export default function ItemEdit(props: ItemEditProps) {
         const itemPermissionsMappedIsChecked: CheckDataItem[] = res.data.map(
           (user: CheckDataItem) => {
             return {
-              user_id: user.user_id,
+              userId: user.userId,
               isChecked: true,
             };
           }
@@ -245,9 +241,9 @@ export default function ItemEdit(props: ItemEditProps) {
   useEffect(() => {
     setUsersWithPermissionToListMapped((prevState) => {
       return prevState.map((user) => {
-        if (itemPermissions.find((item) => item.user_id === user.user_id)) {
+        if (itemPermissions.find((item) => item.userId === user.userId)) {
           return {
-            user_id: user.user_id,
+            userId: user.userId,
             isChecked: true,
           };
         }
@@ -260,7 +256,7 @@ export default function ItemEdit(props: ItemEditProps) {
     setEditModeFormValues((prevState) => {
       return {
         ...prevState,
-        item_permissions: usersWithPermissionToListMapped.filter(
+        itemPermissions: usersWithPermissionToListMapped.filter(
           (user) => user.isChecked
         ),
       };
@@ -270,11 +266,11 @@ export default function ItemEdit(props: ItemEditProps) {
   useEffect(() => {
     if (visibilityControlCheck) {
       setEditModeFormValues((prevState) => {
-        return { ...prevState, permission_level: VisibilityLevel.PRIVATE };
+        return { ...prevState, permissionLevel: VisibilityLevel.PRIVATE };
       });
     } else {
       setEditModeFormValues((prevState) => {
-        return { ...prevState, permission_level: VisibilityLevel.PUBLIC };
+        return { ...prevState, permissionLevel: VisibilityLevel.PUBLIC };
       });
     }
   }, [visibilityControlCheck]);
@@ -286,18 +282,18 @@ export default function ItemEdit(props: ItemEditProps) {
       setEditModeFormValues((prevState) => {
         return {
           ...prevState,
-          time_sensitive_flag: true,
-          date_tz_sensitive: newDate,
-          date_tz_sensitive_end: newDateEnd,
+          timeSensitiveFlag: true,
+          dateTzSensitive: newDate,
+          dateTzSensitiveEnd: newDateEnd,
         };
       });
     } else {
       setEditModeFormValues((prevState) => {
         return {
           ...prevState,
-          time_sensitive_flag: false,
-          date_tz_insensitive: datePart,
-          date_tz_insensitive_end: datePartEnd,
+          timeSensitiveFlag: false,
+          dateTzInsensitive: datePart,
+          dateTzInsensitiveEnd: datePartEnd,
         };
       });
     }
@@ -307,33 +303,33 @@ export default function ItemEdit(props: ItemEditProps) {
     id: Yup.number().required(),
     name: Yup.string().required('name is required'),
     category: Yup.mixed<Category>().oneOf(Object.values(Category)),
-    category_id: editModeFormValues.category
+    categoryId: editModeFormValues.category
       ? Yup.number().required()
       : Yup.number(),
-    item_type: Yup.mixed<ItemType>()
+    itemType: Yup.mixed<ItemType>()
       .oneOf(Object.values(ItemType))
       .default(ItemType.ASSIGNMENT),
-    permission_level: Yup.mixed<VisibilityLevel>()
+    permissionLevel: Yup.mixed<VisibilityLevel>()
       .oneOf(Object.values(VisibilityLevel))
       .default(VisibilityLevel.PUBLIC),
     description: Yup.string(),
-    date_tz_sensitive: timeControlChecked ? Yup.date() : Yup.date(),
-    date_tz_sensitive_end: timeControlChecked
+    dateTzSensitive: timeControlChecked ? Yup.date() : Yup.date(),
+    dateTzSensitiveEnd: timeControlChecked
       ? dateRangeControlChecked
         ? Yup.date()
             .min(
-              Yup.ref('date_tz_sensitive'),
+              Yup.ref('dateTzSensitive'),
               'end date must be after start date'
             )
             .required('end date is required')
         : Yup.date()
       : Yup.date(),
-    time_sensitive_flag: Yup.boolean().required(),
-    date_range_flag: Yup.boolean().required(),
-    date_tz_insensitive: timeControlChecked
+    timeSensitiveFlag: Yup.boolean().required(),
+    dateRangeFlag: Yup.boolean().required(),
+    dateTzInsensitive: timeControlChecked
       ? Yup.string()
       : Yup.string().required('date is required'),
-    date_tz_insensitive_end: timeControlChecked
+    dateTzInsensitiveEnd: timeControlChecked
       ? Yup.string()
       : dateRangeControlChecked
       ? Yup.string()
@@ -342,17 +338,17 @@ export default function ItemEdit(props: ItemEditProps) {
             'end date must be after start date',
             function () {
               return dateRangeValid(
-                this.parent['date_tz_insensitive'],
-                this.parent['date_tz_insensitive_end']
+                this.parent['dateTzInsensitive'],
+                this.parent['dateTzInsensitiveEnd']
               );
             }
           )
           .required('end date is required')
       : Yup.string(),
-    last_modified_by_id: Yup.number(),
-    item_permissions: Yup.array().of(
+    lastModifiedById: Yup.number(),
+    itemPermissions: Yup.array().of(
       Yup.object({
-        user_id: Yup.number().required(),
+        userId: Yup.number().required(),
         isChecked: Yup.boolean().required(),
       })
     ),
@@ -363,19 +359,19 @@ export default function ItemEdit(props: ItemEditProps) {
       id: false,
       name: false,
       category: false,
-      category_id: false,
-      item_type: false,
-      permission_level: false,
+      categoryId: false,
+      itemType: false,
+      permissionLevel: false,
       description: false,
-      date_tz_sensitive: false,
-      date_tz_sensitive_end: false,
-      time_tz_sensitive: false,
-      time_tz_sensitive_end: false,
-      time_sensitive_flag: false,
-      date_range_flag: false,
-      date_tz_insensitive: false,
-      date_tz_insensitive_end: false,
-      last_modified_by_id: false,
+      dateTzSensitive: false,
+      dateTzSensitiveEnd: false,
+      timeTzSensitive: false,
+      timeTzSensitiveEnd: false,
+      timeSensitiveFlag: false,
+      dateRangeFlag: false,
+      dateTzInsensitive: false,
+      dateTzInsensitiveEnd: false,
+      lastModifiedById: false,
     });
 
   return (
@@ -403,23 +399,23 @@ export default function ItemEdit(props: ItemEditProps) {
           <span
             key={key}
             className={`${
-              editModeFormValues.item_type ==
+              editModeFormValues.itemType ==
               ItemType[key as keyof typeof ItemType]
-                ? `text-black ${itemTypeStyling(editModeFormValues.item_type)}`
+                ? `text-black ${itemTypeStyling(editModeFormValues.itemType)}`
                 : 'bg-stone-800 hover:bg-stone-700 text-white'
             }
             )} text-xs px-2 py-1 cursor-pointer my-0.5 mr-0.5 rounded-xl`}
             onClick={() =>
               setEditModeFormValues({
                 ...editModeFormValues,
-                item_type: ItemType[key as keyof typeof ItemType],
+                itemType: ItemType[key as keyof typeof ItemType],
               })
             }
           >
             {key}
           </span>
         ))}
-        {yupValidationError.item_type && (
+        {yupValidationError.itemType && (
           <span className={`${styles['field-error-styling']}`}>required</span>
         )}
       </div>

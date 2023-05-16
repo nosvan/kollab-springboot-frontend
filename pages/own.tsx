@@ -1,6 +1,4 @@
-import { withIronSessionSsr } from 'iron-session/next';
 import { Layout } from 'components/layout/layout';
-import { sessionOptions } from 'lib/iron_session';
 import { UserSafe } from 'lib/types/user';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,13 +21,17 @@ import { TabName } from 'lib/types/ui';
 import { animated, useSpring } from '@react-spring/web';
 import { ItemSafe } from 'lib/types/item';
 import { OwnApiRoutes } from 'lib/api/api_routes';
+import {
+  SpringApiRoutes,
+  SpringItemApiRoutes,
+} from 'lib/api/spring_api_routes';
 
 export default function Own({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
+    if (!true) {
       router.push('/');
       return;
     }
@@ -42,8 +44,13 @@ export default function Own({ user }: { user: UserSafe }) {
     async function getOwnItems() {
       await axios({
         method: 'get',
-        url: OwnApiRoutes.GET_ITEMS,
+        url: SpringItemApiRoutes.ITEM_GET_ALL_OWN,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
       }).then((res) => {
+        console.log(res.data);
         dispatch(setOwnItems(res.data));
       });
     }
@@ -66,22 +73,22 @@ export default function Own({ user }: { user: UserSafe }) {
   useEffect(() => {
     setTimeInsensitiveItemsTask(
       ownState.items.filter(
-        (item) => !item.time_sensitive_flag && !item.date_range_flag
+        (item) => !item.timeSensitiveFlag && !item.dateRangeFlag
       )
     );
     setTimeInsensitiveItemsEvent(
       ownState.items.filter(
-        (item) => !item.time_sensitive_flag && item.date_range_flag
+        (item) => !item.timeSensitiveFlag && item.dateRangeFlag
       )
     );
     setTimeSensitiveItemsTask(
       ownState.items.filter(
-        (item) => item.time_sensitive_flag && !item.date_range_flag
+        (item) => item.timeSensitiveFlag && !item.dateRangeFlag
       )
     );
     setTimeSensitiveItemsEvent(
       ownState.items.filter(
-        (item) => item.time_sensitive_flag && item.date_range_flag
+        (item) => item.timeSensitiveFlag && item.dateRangeFlag
       )
     );
   }, [ownState.items]);
@@ -195,25 +202,3 @@ export default function Own({ user }: { user: UserSafe }) {
     setDayLayout(newDayLayout);
   }
 }
-
-export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps({ req }) {
-    const session = req.session;
-    let user: UserSafe = {
-      id: -999,
-      first_name: '',
-      last_name: '',
-      email: '',
-      isLoggedIn: false,
-    };
-    if (session.userSession) {
-      user = session.userSession;
-    }
-    return {
-      props: {
-        user,
-      },
-    };
-  },
-  sessionOptions
-);

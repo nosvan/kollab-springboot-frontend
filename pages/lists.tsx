@@ -1,6 +1,4 @@
-import { withIronSessionSsr } from 'iron-session/next';
 import { Layout } from 'components/layout/layout';
-import { sessionOptions } from 'lib/iron_session';
 import { UserSafe } from 'lib/types/user';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,7 +33,7 @@ export default function Lists({ user }: { user: UserSafe }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
+    if (!true) {
       router.push('/');
       return;
     }
@@ -87,22 +85,22 @@ export default function Lists({ user }: { user: UserSafe }) {
   useEffect(() => {
     setTimeInsensitiveItemsTask(
       listState.items.filter(
-        (item) => !item.time_sensitive_flag && !item.date_range_flag
+        (item) => !item.timeSensitiveFlag && !item.dateRangeFlag
       )
     );
     setTimeInsensitiveItemsEvent(
       listState.items.filter(
-        (item) => !item.time_sensitive_flag && item.date_range_flag
+        (item) => !item.timeSensitiveFlag && item.dateRangeFlag
       )
     );
     setTimeSensitiveItemsTask(
       listState.items.filter(
-        (item) => item.time_sensitive_flag && !item.date_range_flag
+        (item) => item.timeSensitiveFlag && !item.dateRangeFlag
       )
     );
     setTimeSensitiveItemsEvent(
       listState.items.filter(
-        (item) => item.time_sensitive_flag && item.date_range_flag
+        (item) => item.timeSensitiveFlag && item.dateRangeFlag
       )
     );
   }, [listState.items]);
@@ -283,25 +281,3 @@ export default function Lists({ user }: { user: UserSafe }) {
     dispatch(setCurrentList(list));
   }
 }
-
-export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps({ req }) {
-    const session = req.session;
-    let user: UserSafe = {
-      id: -999,
-      first_name: '',
-      last_name: '',
-      email: '',
-      isLoggedIn: false,
-    };
-    if (session.userSession) {
-      user = session.userSession;
-    }
-    return {
-      props: {
-        user,
-      },
-    };
-  },
-  sessionOptions
-);

@@ -1,6 +1,6 @@
 import { useSpring, animated } from '@react-spring/web';
 import axios from 'axios';
-import { ApiRoutes } from 'lib/api/api_routes';
+import { SpringApiRoutes } from 'lib/api/spring_api_routes';
 import { TabName } from 'lib/types/ui';
 import { UserCredentials } from 'lib/types/user';
 import { useRouter } from 'next/router';
@@ -135,13 +135,15 @@ export default function Login(props: LoginProps) {
     try {
       await axios({
         method: 'post',
-        url: ApiRoutes.LOGIN,
+        url: SpringApiRoutes.LOGIN,
         data: JSON.stringify(formValues),
         headers: {
           'Content-Type': 'application/json',
         },
+        withCredentials: true,
       }).then((res) => {
-        dispatch(setUserState(res.data));
+        console.log(res);
+        dispatch(setUserState({ ...res.data, isLoggedIn: true }));
         dispatch(setCurrentTab(TabName.HOME));
         router.push('/');
       });

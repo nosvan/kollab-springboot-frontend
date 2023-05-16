@@ -1,7 +1,8 @@
 import { useSpring, animated } from '@react-spring/web';
 import axios from 'axios';
 import { ApiRoutes } from 'lib/api/api_routes';
-import { UserRegister } from 'lib/types/user';
+import { SpringApiRoutes } from 'lib/api/spring_api_routes';
+import { UserRegister, UserRegisterError } from 'lib/types/user';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setUserState } from 'state/redux/userSlice';
@@ -19,16 +20,16 @@ export default function Register(props: RegisterProps) {
   const dispatch = useDispatch();
 
   const [formValues, setFormValues] = useState<UserRegister>({
-    first_name: '',
-    last_name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirm_password: '',
   });
 
   const yupValidationSchema = Yup.object({
-    first_name: Yup.string().required('first name is required'),
-    last_name: Yup.string().required('last name is required'),
+    firstName: Yup.string().required('first name is required'),
+    lastName: Yup.string().required('last name is required'),
     email: Yup.string().email('invalid email').required('email is required'),
     password: Yup.string().required('password is required'),
     confirm_password: Yup.string()
@@ -36,9 +37,9 @@ export default function Register(props: RegisterProps) {
       .oneOf([Yup.ref('password')], 'passwords must match'),
   });
 
-  const [yupErrors, setYupErrors] = useState({
-    first_name: false,
-    last_name: false,
+  const [yupErrors, setYupErrors] = useState<UserRegisterError>({
+    firstName: false,
+    lastName: false,
     email: false,
     password: false,
     confirm_password: false,
@@ -65,20 +66,18 @@ export default function Register(props: RegisterProps) {
               <input
                 className="bg-stone-800 text-white rounded-xl px-2"
                 type="text"
-                id="first_name"
-                name="first_name"
-                value={formValues.first_name}
+                id="firstName"
+                name="firstName"
+                value={formValues.firstName}
                 onChange={(event) =>
                   setFormValues({
                     ...formValues,
-                    first_name: event.target.value,
+                    firstName: event.target.value,
                   })
                 }
-                onFocus={() =>
-                  setYupErrors({ ...yupErrors, first_name: false })
-                }
+                onFocus={() => setYupErrors({ ...yupErrors, firstName: false })}
               />
-              {yupErrors.first_name && (
+              {yupErrors.firstName && (
                 <span className="px-1 text-red-500 text-sm">
                   first name is required
                 </span>
@@ -89,18 +88,18 @@ export default function Register(props: RegisterProps) {
               <input
                 className="bg-stone-800 text-white rounded-xl px-2"
                 type="text"
-                id="last_name"
-                name="last_name"
-                value={formValues.last_name}
+                id="lastName"
+                name="lastName"
+                value={formValues.lastName}
                 onChange={(event) =>
                   setFormValues({
                     ...formValues,
-                    last_name: event.target.value,
+                    lastName: event.target.value,
                   })
                 }
-                onFocus={() => setYupErrors({ ...yupErrors, last_name: false })}
+                onFocus={() => setYupErrors({ ...yupErrors, lastName: false })}
               />
-              {yupErrors.last_name && (
+              {yupErrors.lastName && (
                 <span className="px-1 text-red-500 text-sm">
                   last name is required
                 </span>
@@ -203,13 +202,18 @@ export default function Register(props: RegisterProps) {
     if (!(JSON.stringify(yupValidateResult) === JSON.stringify(formValues))) {
       return;
     }
+    console.log(formValues);
     try {
       await axios({
         method: 'post',
-        url: ApiRoutes.REGISTER,
+        url: SpringApiRoutes.REGISTER,
         data: JSON.stringify(formValues),
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
       }).then((res) => {
+        console.log(res);
         if (res.data.message === 'Email already exists') {
           return;
         }

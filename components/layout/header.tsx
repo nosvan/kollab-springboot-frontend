@@ -1,6 +1,7 @@
 import { animated, useSpring } from '@react-spring/web';
 import axios from 'axios';
 import { ApiRoutes } from 'lib/api/api_routes';
+import { SpringApiRoutes } from 'lib/api/spring_api_routes';
 import { TabName } from 'lib/types/ui';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction } from 'react';
@@ -87,9 +88,12 @@ export default function Header(props: HeaderProps) {
     try {
       await axios({
         method: 'POST',
-        url: ApiRoutes.LOGOUT,
+        url: SpringApiRoutes.LOGOUT,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
       }).then((res) => {
-        // dispatch(setUserState(res.data));
         dispatch(resetUserState());
         dispatch(resetListState());
         dispatch(resetOwnState());

@@ -1,4 +1,4 @@
-import { ItemSafe } from "./item";
+import { ItemSafe } from './item';
 
 // login
 export type UserCredentials = {
@@ -8,58 +8,67 @@ export type UserCredentials = {
 
 // user register
 export type UserRegister = {
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  confirm_password: string;
+  confirmPassword: string;
+};
+
+// user register
+export type UserRegisterError = {
+  firstName: boolean;
+  lastName: boolean;
+  email: boolean;
+  password: boolean;
+  confirmPassword: boolean;
 };
 
 // return type from server
 export type UserSafe = {
   id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   isLoggedIn: boolean;
-}
+};
 
 // iron session user
 export type UserSession = {
   id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   isLoggedIn: boolean;
-}
+};
 
 export type User = {
   id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
 };
 
 // redux state
 export type UserSliceState = {
-  user: UserState,
-  createNewTypeMode: boolean,
-  createNewItemMode: boolean,
-}
+  user: UserState;
+  createNewTypeMode: boolean;
+  createNewItemMode: boolean;
+};
 
 export type UserState = {
   id: number;
-  first_name: string;
-  last_name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   isLoggedIn: boolean;
   currentTab: string;
-}
+};
 
 export type UserReset = {
   email: string;
-  confirm_email: string;
+  confirmEmail: string;
   locationOrigin: string;
-}
+};

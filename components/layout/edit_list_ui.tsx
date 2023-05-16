@@ -8,11 +8,11 @@ import { matchYupErrorStateWithCompErrorState } from 'utils/formValidateUtils';
 import * as Yup from 'yup';
 
 type passcodeFormValues = {
-  user_id: number;
-  list_id: number;
-  old_passcode: string;
+  userId: number;
+  listId: number;
+  oldPasscode: string;
   passcode: string;
-  confirm_passcode: string;
+  confirmPasscode: string;
 };
 
 export default function EditList(props: { listId: number }) {
@@ -21,26 +21,26 @@ export default function EditList(props: { listId: number }) {
   );
   const [passCodeMode, setNewPasscodeMode] = useState<boolean>(false);
   const initialPasscodeFormValues: passcodeFormValues = {
-    user_id: userState.user.id,
-    list_id: props.listId,
-    old_passcode: '',
+    userId: userState.user.id,
+    listId: props.listId,
+    oldPasscode: '',
     passcode: '',
-    confirm_passcode: '',
+    confirmPasscode: '',
   };
   const [passcodeFormValues, setPasscodeFormValues] =
     useState<passcodeFormValues>(initialPasscodeFormValues);
   const intitialPasscodeYupErrors = {
-    old_passcode: false,
+    oldPasscode: false,
     passcode: false,
-    confirm_passcode: false,
+    confirmPasscode: false,
   };
   const [passcodeYupErrors, setPasscodeYupErrors] = useState(
     intitialPasscodeYupErrors
   );
   const passcodeYupValidationSchema = Yup.object({
-    old_passcode: Yup.string().required('Old passcode is required'),
+    oldPasscode: Yup.string().required('Old passcode is required'),
     passcode: Yup.string().required('Passcode is required'),
-    confirm_passcode: Yup.string()
+    confirmPasscode: Yup.string()
       .required()
       .oneOf([Yup.ref('passcode')], 'passcodes must match'),
   });
@@ -73,18 +73,18 @@ export default function EditList(props: { listId: number }) {
                       onChange={(event) =>
                         setPasscodeFormValues({
                           ...passcodeFormValues,
-                          old_passcode: event.target.value,
+                          oldPasscode: event.target.value,
                         })
                       }
                       onFocus={() => {
                         setPasscodeYupErrors({
                           ...passcodeYupErrors,
-                          old_passcode: false,
+                          oldPasscode: false,
                         });
                         setInvalidCurrentPasscode(false);
                       }}
                     ></input>
-                    {passcodeYupErrors.old_passcode && (
+                    {passcodeYupErrors.oldPasscode && (
                       <div className="text-red-500 text-sm">
                         current passcode is required
                       </div>
@@ -127,17 +127,17 @@ export default function EditList(props: { listId: number }) {
                       onChange={(event) =>
                         setPasscodeFormValues({
                           ...passcodeFormValues,
-                          confirm_passcode: event.target.value,
+                          confirmPasscode: event.target.value,
                         })
                       }
                       onFocus={() => {
                         setPasscodeYupErrors({
                           ...passcodeYupErrors,
-                          confirm_passcode: false,
+                          confirmPasscode: false,
                         });
                       }}
                     ></input>
-                    {passcodeYupErrors.confirm_passcode && (
+                    {passcodeYupErrors.confirmPasscode && (
                       <div className="text-red-500 text-sm">
                         passcodes must match
                       </div>

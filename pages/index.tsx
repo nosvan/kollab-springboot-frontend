@@ -1,6 +1,4 @@
 import { Layout } from 'components/layout/layout';
-import { withIronSessionSsr } from 'iron-session/next';
-import { sessionOptions } from 'lib/iron_session';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setUserState } from 'state/redux/userSlice';
@@ -12,13 +10,15 @@ import { TbArrowBigRight } from 'react-icons/tb';
 import ModalPopup from 'components/layout/modal';
 import NewItem from 'components/item/create_item';
 import NewList from 'components/list/create_list';
+import axios from 'axios';
+import { SpringApiRoutes } from 'lib/api/spring_api_routes';
 
 export default function Index({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
+    if (!true) {
       router.push('/');
       return;
     }
@@ -34,6 +34,23 @@ export default function Index({ user }: { user: UserSafe }) {
     config: { duration: 500 },
   });
 
+  async function getUsers() {
+    try {
+      await axios({
+        method: 'GET',
+        url: SpringApiRoutes.USERS,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      }).then((res) => {
+        console.log(res);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   return (
     <Layout>
       <animated.div
@@ -45,6 +62,17 @@ export default function Index({ user }: { user: UserSafe }) {
             <span className="bg-blue-700 rounded-2xl px-2 py-1">
               Quick Actions
             </span>
+          </div>
+          <div>
+            <div className="flex flex-row">
+              <span
+                onClick={() => getUsers()}
+                className="flex flex-row items-center space-x-1 text-sm bg-stone-900 hover:bg-stone-800 rounded-2xl p-2 cursor-pointer"
+              >
+                <span>Get Users</span>
+                <TbArrowBigRight></TbArrowBigRight>
+              </span>
+            </div>
           </div>
           <div>
             <div className="flex flex-row">
@@ -91,25 +119,3 @@ export default function Index({ user }: { user: UserSafe }) {
     </Layout>
   );
 }
-
-export const getServerSideProps = withIronSessionSsr(
-  async function getServerSideProps({ req }) {
-    const session = req.session;
-    let user: UserSafe = {
-      id: -999,
-      first_name: '',
-      last_name: '',
-      email: '',
-      isLoggedIn: false,
-    };
-    if (session.userSession) {
-      user = session.userSession;
-    }
-    return {
-      props: {
-        user,
-      },
-    };
-  },
-  sessionOptions
-);

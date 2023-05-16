@@ -48,7 +48,7 @@ export function DateInputs(props: DateFormProps) {
                 setYupValidationError((prevValue) => {
                   return {
                     ...prevValue,
-                    date_tz_insensitive: false,
+                    dateTzInsensitive: false,
                   };
                 })
               }
@@ -56,7 +56,7 @@ export function DateInputs(props: DateFormProps) {
                 setDatePart(event.target.value);
               }}
             />
-            {yupValidationError.date_tz_insensitive && (
+            {yupValidationError.dateTzInsensitive && (
               <span className={`${styles['field-error-styling']}`}>
                 invalid
               </span>
@@ -72,7 +72,7 @@ export function DateInputs(props: DateFormProps) {
                   setYupValidationError((prevValue) => {
                     return {
                       ...prevValue,
-                      date_tz_insensitive_end: false,
+                      dateTzInsensitiveEnd: false,
                     };
                   })
                 }
@@ -80,7 +80,7 @@ export function DateInputs(props: DateFormProps) {
                   setDatePartEnd(event.target.value);
                 }}
               />
-              {yupValidationError.date_tz_insensitive_end && (
+              {yupValidationError.dateTzInsensitiveEnd && (
                 <span className={`${styles['field-error-styling']}`}>
                   invalid
                 </span>
@@ -101,7 +101,7 @@ export function DateInputs(props: DateFormProps) {
                   setYupValidationError((prevValue) => {
                     return {
                       ...prevValue,
-                      date_tz_sensitive: false,
+                      dateTzSensitive: false,
                     };
                   })
                 }
@@ -119,7 +119,7 @@ export function DateInputs(props: DateFormProps) {
                   setYupValidationError((prevValue) => {
                     return {
                       ...prevValue,
-                      date_tz_sensitive: false,
+                      dateTzSensitive: false,
                     };
                   })
                 }
@@ -130,7 +130,7 @@ export function DateInputs(props: DateFormProps) {
             </span>
           </span>
           <span className="flex flex-row">
-            {yupValidationError.date_tz_sensitive && (
+            {yupValidationError.dateTzSensitive && (
               <span className={`${styles['field-error-styling']}`}>
                 invalid
               </span>
@@ -147,7 +147,7 @@ export function DateInputs(props: DateFormProps) {
                     setYupValidationError((prevValue) => {
                       return {
                         ...prevValue,
-                        date_tz_sensitive_end: false,
+                        dateTzSensitiveEnd: false,
                       };
                     })
                   }
@@ -163,7 +163,7 @@ export function DateInputs(props: DateFormProps) {
                     setYupValidationError((prevValue) => {
                       return {
                         ...prevValue,
-                        date_tz_sensitive_end: false,
+                        dateTzSensitiveEnd: false,
                       };
                     })
                   }
@@ -173,7 +173,7 @@ export function DateInputs(props: DateFormProps) {
                 />
               </span>
               <span className="flex flex-row">
-                {yupValidationError.date_tz_sensitive_end && (
+                {yupValidationError.dateTzSensitiveEnd && (
                   <span className={`${styles['field-error-styling']}`}>
                     invalid
                   </span>
