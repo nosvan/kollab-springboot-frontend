@@ -9,6 +9,9 @@ import {
 } from 'utils/formValidateUtils';
 import { ListJoinClient, ListRegister } from 'lib/types/list';
 import { ListApiRoutes } from 'lib/api/api_routes';
+import { SpringListApiRoutes } from 'lib/api/spring_api_routes';
+import { UserSliceState } from 'lib/types/user';
+import { RootState } from 'state/redux/store';
 
 interface NewListProps {
   setCreateNewTypeMode: Dispatch<SetStateAction<boolean>>;
@@ -18,28 +21,31 @@ export default function NewList(props: NewListProps) {
   const { setCreateNewTypeMode } = props;
   const dispatch = useDispatch();
   const [selection, setSelection] = useState('create_list');
+  const userState: UserSliceState = useSelector(
+    (state: RootState) => state.user_store
+  );
 
   const initialJoinFormValuesState: ListJoinClient = {
-    list_id: '',
+    listId: '',
     passcode: '',
-    confirm_passcode: '',
+    confirmPasscode: '',
   };
   const [joinFormValues, setJoinFormValues] = useState<ListJoinClient>(
     initialJoinFormValuesState
   );
 
   const [joinYupErrors, setJoinYupErrors] = useState({
-    list_id: false,
+    listId: false,
     passcode: false,
-    confirm_passcode: false,
+    confirmPasscode: false,
   });
 
   const joinYupValidationSchema = Yup.object({
-    list_id: Yup.string()
+    listId: Yup.string()
       .min(1, 'List ID must be above 0')
       .required('List ID is required'),
     passcode: Yup.string().required('Passcode is required'),
-    confirm_passcode: Yup.string()
+    confirmPasscode: Yup.string()
       .required()
       .oneOf([Yup.ref('passcode')], 'passcodes must match'),
   });
@@ -48,7 +54,7 @@ export default function NewList(props: NewListProps) {
     name: '',
     description: '',
     passcode: '',
-    confirm_passcode: '',
+    confirmPasscode: '',
   };
 
   const [createFormValues, setCreateFormValues] = useState<ListRegister>(
@@ -59,14 +65,14 @@ export default function NewList(props: NewListProps) {
     name: false,
     description: false,
     passcode: false,
-    confirm_passcode: false,
+    confirmPasscode: false,
   });
 
   const createYupValidationSchema = Yup.object({
     name: Yup.string().required('Name is required'),
     description: Yup.string().required('Description is required'),
     passcode: Yup.string().required('Passcode is required'),
-    confirm_passcode: Yup.string()
+    confirmPasscode: Yup.string()
       .required()
       .oneOf([Yup.ref('passcode')], 'passcodes must match'),
   });
@@ -91,23 +97,23 @@ export default function NewList(props: NewListProps) {
                 <input
                   className="text-white bg-stone-800 p-1 rounded-lg"
                   type="number"
-                  id="list_id"
-                  name="list_id"
-                  value={joinFormValues.list_id}
+                  id="listId"
+                  name="listId"
+                  value={joinFormValues.listId}
                   onChange={(event) => {
                     setJoinFormValues({
                       ...joinFormValues,
-                      list_id: event.target.value,
+                      listId: event.target.value,
                     });
                   }}
                   onFocus={() => {
                     setJoinYupErrors({
                       ...joinYupErrors,
-                      list_id: false,
+                      listId: false,
                     });
                   }}
                 />
-                {joinYupErrors.list_id && (
+                {joinYupErrors.listId && (
                   <div className="px-1 text-red-500 text-sm">
                     list id must be above 0 and is required
                   </div>
@@ -145,23 +151,23 @@ export default function NewList(props: NewListProps) {
                 <input
                   className="text-white bg-stone-800 p-1 rounded-lg"
                   type="password"
-                  id="confirm_passcode"
-                  name="confirm_passcode"
-                  value={joinFormValues.confirm_passcode}
+                  id="confirmPasscode"
+                  name="confirmPasscode"
+                  value={joinFormValues.confirmPasscode}
                   onChange={(event) => {
                     setJoinFormValues({
                       ...joinFormValues,
-                      confirm_passcode: event.target.value,
+                      confirmPasscode: event.target.value,
                     });
                   }}
                   onFocus={() => {
                     setJoinYupErrors({
                       ...joinYupErrors,
-                      confirm_passcode: false,
+                      confirmPasscode: false,
                     });
                   }}
                 />
-                {joinYupErrors.confirm_passcode && (
+                {joinYupErrors.confirmPasscode && (
                   <div className="px-1 text-red-500 text-sm">
                     passcodes must match
                   </div>
@@ -257,23 +263,23 @@ export default function NewList(props: NewListProps) {
                 <input
                   className="text-white bg-stone-800 p-1 rounded-lg"
                   type="password"
-                  id="confirm_passcode"
-                  name="confirm_passcode"
-                  value={createFormValues.confirm_passcode}
+                  id="confirmPasscode"
+                  name="confirmPasscode"
+                  value={createFormValues.confirmPasscode}
                   onChange={(event) => {
                     setCreateFormValues({
                       ...createFormValues,
-                      confirm_passcode: event.target.value,
+                      confirmPasscode: event.target.value,
                     });
                   }}
                   onFocus={() => {
                     setCreateYupErrors({
                       ...createYupErrors,
-                      confirm_passcode: false,
+                      confirmPasscode: false,
                     });
                   }}
                 />
-                {createYupErrors.confirm_passcode && (
+                {createYupErrors.confirmPasscode && (
                   <div className="px-1 text-red-500 text-sm">
                     passcodes must match
                   </div>
@@ -345,9 +351,10 @@ export default function NewList(props: NewListProps) {
     try {
       await axios({
         method: 'post',
-        url: ListApiRoutes.JOIN_LIST,
+        url: SpringListApiRoutes.LIST_JOIN,
         data: JSON.stringify(joinFormValues),
         headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
       }).then((res) => {
         setJoinFormValues(initialJoinFormValuesState);
         setCreateNewTypeMode(false);
@@ -376,15 +383,18 @@ export default function NewList(props: NewListProps) {
     try {
       await axios({
         method: 'post',
-        url: ListApiRoutes.NEW_LIST,
+        url: SpringListApiRoutes.LIST_CREATE,
         data: JSON.stringify(createFormValues),
         headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
       }).then((res) => {
         dispatch(setCurrentList(res.data));
       });
       await axios({
         method: 'get',
-        url: ListApiRoutes.GET_LISTS,
+        url: SpringListApiRoutes.LIST_GET_ALL_OWN,
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
       }).then((res) => {
         dispatch(setLists(res.data));
       });

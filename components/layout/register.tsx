@@ -24,7 +24,7 @@ export default function Register(props: RegisterProps) {
     lastName: '',
     email: '',
     password: '',
-    confirm_password: '',
+    confirmPassword: '',
   });
 
   const yupValidationSchema = Yup.object({
@@ -32,7 +32,7 @@ export default function Register(props: RegisterProps) {
     lastName: Yup.string().required('last name is required'),
     email: Yup.string().email('invalid email').required('email is required'),
     password: Yup.string().required('password is required'),
-    confirm_password: Yup.string()
+    confirmPassword: Yup.string()
       .required()
       .oneOf([Yup.ref('password')], 'passwords must match'),
   });
@@ -42,7 +42,7 @@ export default function Register(props: RegisterProps) {
     lastName: false,
     email: false,
     password: false,
-    confirm_password: false,
+    confirmPassword: false,
   });
 
   const modalSpring = useSpring({
@@ -148,20 +148,20 @@ export default function Register(props: RegisterProps) {
               <input
                 className="bg-stone-800 text-white rounded-xl px-2"
                 type="password"
-                id="confirm_password"
-                name="confirm_password"
-                value={formValues.confirm_password}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formValues.confirmPassword}
                 onChange={(event) =>
                   setFormValues({
                     ...formValues,
-                    confirm_password: event.target.value,
+                    confirmPassword: event.target.value,
                   })
                 }
                 onFocus={() =>
-                  setYupErrors({ ...yupErrors, confirm_password: false })
+                  setYupErrors({ ...yupErrors, confirmPassword: false })
                 }
               />
-              {yupErrors.confirm_password && (
+              {yupErrors.confirmPassword && (
                 <span className="px-1 text-red-500 text-sm">
                   passwords must match
                 </span>

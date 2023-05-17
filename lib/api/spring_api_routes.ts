@@ -10,8 +10,19 @@ export const SpringApiRoutes = {
 
 export const SpringItemApiRoutes = {
   ITEM_GET: host_api + '/item/get',
-  ITEM_GET_ALL_OWN: host_api + '/item/getallown',
+  ITEM_GET_ALL_OWN: host_api + '/item/get-all-own',
   ITEM_CREATE: host_api + '/item/create',
   ITEM_DELETE: host_api + '/item/delete',
   ITEM_UPDATE: host_api + '/item/update',
+};
+
+export const SpringListApiRoutes = {
+  LIST_GET: host_api + '/list/get',
+  LIST_GET_LISTS: host_api + '/list/get-lists',
+  LIST_GET_ITEMS: host_api + '/list/get-items',
+  LIST_GET_ALL_OWN: host_api + '/list/get-all-own',
+  LIST_CREATE: host_api + '/list/create',
+  LIST_DELETE: host_api + '/list/delete',
+  LIST_UPDATE: host_api + '/list/update',
+  LIST_JOIN: host_api + '/list/join',
 };

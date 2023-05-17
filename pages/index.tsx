@@ -34,23 +34,6 @@ export default function Index({ user }: { user: UserSafe }) {
     config: { duration: 500 },
   });
 
-  async function getUsers() {
-    try {
-      await axios({
-        method: 'GET',
-        url: SpringApiRoutes.USERS,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-      }).then((res) => {
-        console.log(res);
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   return (
     <Layout>
       <animated.div
@@ -62,17 +45,6 @@ export default function Index({ user }: { user: UserSafe }) {
             <span className="bg-blue-700 rounded-2xl px-2 py-1">
               Quick Actions
             </span>
-          </div>
-          <div>
-            <div className="flex flex-row">
-              <span
-                onClick={() => getUsers()}
-                className="flex flex-row items-center space-x-1 text-sm bg-stone-900 hover:bg-stone-800 rounded-2xl p-2 cursor-pointer"
-              >
-                <span>Get Users</span>
-                <TbArrowBigRight></TbArrowBigRight>
-              </span>
-            </div>
           </div>
           <div>
             <div className="flex flex-row">

@@ -71,14 +71,9 @@ export const listSlice = createSlice({
     },
     setAdditionalListItems: (state, action) => {
       state.items = state.items.filter((item: ItemSafe) => {
-        const itemFoundToRemove = action.payload.find(
-          (itemToRemove: ItemSafe) => {
-            return item.id === itemToRemove.id;
-          }
-        );
-        return !itemFoundToRemove;
+        return item.id !== action.payload.id;
       });
-      state.items = [...state.items, ...action.payload];
+      state.items.push(action.payload);
     },
     setViewListItemMode: (state, action) => {
       state.viewListItemMode = action.payload;

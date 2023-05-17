@@ -549,16 +549,12 @@ export default function NewItem(props: NewItemProps) {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         }).then(async (res) => {
-          if (
-            res.status === 200 &&
-            res.data.length > 0 &&
-            res.data[0].category
-          ) {
-            if (res.data[0].category === Category.LIST) {
+          if (res.status === 200 && res.data.category) {
+            if (res.data.category === Category.LIST) {
               dispatch(setAdditionalListItems(res.data));
               if (fileSelected) {
                 console.log('uploading attachment');
-                await uploadAttachments(fileSelected, res.data[0]);
+                await uploadAttachments(fileSelected, res.data);
               }
             }
           }

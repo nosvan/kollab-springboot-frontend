@@ -27,6 +27,10 @@ import { ListSafe, ListSliceState } from 'lib/types/list';
 import NewList from 'components/list/create_list';
 import { ListApiRoutes } from 'lib/api/api_routes';
 import EditList from 'components/layout/edit_list_ui';
+import {
+  SpringItemApiRoutes,
+  SpringListApiRoutes,
+} from 'lib/api/spring_api_routes';
 
 export default function Lists({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
@@ -41,7 +45,9 @@ export default function Lists({ user }: { user: UserSafe }) {
     async function getUserLists() {
       await axios({
         method: 'get',
-        url: ListApiRoutes.GET_LISTS,
+        url: SpringListApiRoutes.LIST_GET_LISTS,
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
       }).then((res) => {
         dispatch(setCurrentListAndLists(res.data));
       });
@@ -57,11 +63,12 @@ export default function Lists({ user }: { user: UserSafe }) {
     async function getListItems() {
       await axios({
         method: 'get',
-        url: ListApiRoutes.GET_ITEMS,
+        url: SpringListApiRoutes.LIST_GET_ITEMS,
         params: {
           category: Category.LIST,
-          category_id: listState.list.id,
+          categoryId: listState.list.id,
         },
+        withCredentials: true,
       }).then((res) => {
         dispatch(setListItems(res.data));
       });

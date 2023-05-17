@@ -1,7 +1,7 @@
 import { CheckDataItem } from './list';
 
 export enum Category {
-  LIST = 'list',
+  LIST = 'LIST',
 }
 
 export enum ItemType {
