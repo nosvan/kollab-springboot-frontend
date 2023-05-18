@@ -43,6 +43,7 @@ import { TbArrowBarToDown, TbPaperclip } from 'react-icons/tb';
 import { uploadAttachments } from './create_item';
 import { getDownloadURL, listAll, ref } from 'firebase/storage';
 import { storage } from 'utils/firebaseConfig';
+import { SpringListApiRoutes } from 'lib/api/spring_api_routes';
 
 interface ItemEditProps {
   item: ItemSafe;
@@ -198,10 +199,11 @@ export default function ItemEdit(props: ItemEditProps) {
     async function getListUsers() {
       await axios({
         method: 'get',
-        url: ListApiRoutes.LIST_USERS,
+        url: SpringListApiRoutes.LIST_GET_USERS,
         params: {
-          list_id: item.categoryId,
+          listId: item.categoryId,
         },
+        withCredentials: true,
       }).then((res) => {
         setUsersWithPermissionToList(res.data);
         const resDataMapped: CheckDataItem[] = res.data.map(

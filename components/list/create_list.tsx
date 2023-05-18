@@ -1,7 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { setCurrentList, setLists } from 'state/redux/listSlice';
+import {
+  setCurrentList,
+  setCurrentListAndLists,
+  setLists,
+} from 'state/redux/listSlice';
 import * as Yup from 'yup';
 import {
   matchYupErrorStateWithCompErrorState,
@@ -21,9 +25,6 @@ export default function NewList(props: NewListProps) {
   const { setCreateNewTypeMode } = props;
   const dispatch = useDispatch();
   const [selection, setSelection] = useState('create_list');
-  const userState: UserSliceState = useSelector(
-    (state: RootState) => state.user_store
-  );
 
   const initialJoinFormValuesState: ListJoinClient = {
     listId: '',
@@ -357,11 +358,24 @@ export default function NewList(props: NewListProps) {
         withCredentials: true,
       }).then((res) => {
         setJoinFormValues(initialJoinFormValuesState);
+        getUserLists();
         setCreateNewTypeMode(false);
       });
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async function getUserLists() {
+    await axios({
+      method: 'get',
+      url: SpringListApiRoutes.LIST_GET_LISTS,
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true,
+    }).then((res) => {
+      console.log(res.data);
+      dispatch(setCurrentListAndLists(res.data));
+    });
   }
 
   async function handleCreateListFormSubmit(
@@ -392,7 +406,7 @@ export default function NewList(props: NewListProps) {
       });
       await axios({
         method: 'get',
-        url: SpringListApiRoutes.LIST_GET_ALL_OWN,
+        url: SpringListApiRoutes.LIST_GET_LISTS,
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true,
       }).then((res) => {

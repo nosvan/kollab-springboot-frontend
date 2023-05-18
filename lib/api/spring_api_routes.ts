@@ -18,6 +18,7 @@ export const SpringItemApiRoutes = {
 
 export const SpringListApiRoutes = {
   LIST_GET: host_api + '/list/get',
+  LIST_GET_USERS: host_api + '/list/get-users',
   LIST_GET_LISTS: host_api + '/list/get-lists',
   LIST_GET_ITEMS: host_api + '/list/get-items',
   LIST_GET_ALL_OWN: host_api + '/list/get-all-own',
@@ -25,4 +26,5 @@ export const SpringListApiRoutes = {
   LIST_DELETE: host_api + '/list/delete',
   LIST_UPDATE: host_api + '/list/update',
   LIST_JOIN: host_api + '/list/join',
+  LIST_EDIT_PASSCODE: host_api + '/list/edit-passcode',
 };

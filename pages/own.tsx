@@ -50,7 +50,6 @@ export default function Own({ user }: { user: UserSafe }) {
         },
         withCredentials: true,
       }).then((res) => {
-        console.log(res.data);
         dispatch(setOwnItems(res.data));
       });
     }

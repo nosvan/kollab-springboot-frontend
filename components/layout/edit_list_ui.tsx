@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { ListApiRoutes } from 'lib/api/api_routes';
+import { SpringListApiRoutes } from 'lib/api/spring_api_routes';
 import { UserSliceState } from 'lib/types/user';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -188,17 +189,16 @@ export default function EditList(props: { listId: number }) {
     try {
       await axios({
         method: 'post',
-        url: ListApiRoutes.EDIT_PASSCODE,
+        url: SpringListApiRoutes.LIST_EDIT_PASSCODE,
         data: JSON.stringify(passcodeFormValues),
         headers: { 'Content-Type': 'application/json' },
+        withCredentials: true,
       }).then((res) => {
         cancelPasscodeSubmit();
       });
     } catch (error: any) {
       if (error.response.status === 404) {
         setInvalidCurrentPasscode(true);
-      } else {
-        console.log(error);
       }
     }
   }
