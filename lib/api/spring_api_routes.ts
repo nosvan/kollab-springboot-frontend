@@ -10,6 +10,7 @@ export const SpringApiRoutes = {
 
 export const SpringItemApiRoutes = {
   ITEM_GET: host_api + '/item/get',
+  ITEM_GET_PERMISSIONS: host_api + '/item/get-permissions',
   ITEM_GET_ALL_OWN: host_api + '/item/get-all-own',
   ITEM_CREATE: host_api + '/item/create',
   ITEM_DELETE: host_api + '/item/delete',

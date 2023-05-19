@@ -43,7 +43,10 @@ import { TbArrowBarToDown, TbPaperclip } from 'react-icons/tb';
 import { uploadAttachments } from './create_item';
 import { getDownloadURL, listAll, ref } from 'firebase/storage';
 import { storage } from 'utils/firebaseConfig';
-import { SpringListApiRoutes } from 'lib/api/spring_api_routes';
+import {
+  SpringItemApiRoutes,
+  SpringListApiRoutes,
+} from 'lib/api/spring_api_routes';
 
 interface ItemEditProps {
   item: ItemSafe;
@@ -209,7 +212,7 @@ export default function ItemEdit(props: ItemEditProps) {
         const resDataMapped: CheckDataItem[] = res.data.map(
           (user: UsersWithPermissionForList) => {
             return {
-              userId: user.userId,
+              userId: user.id,
               isChecked: false,
             };
           }
@@ -221,10 +224,11 @@ export default function ItemEdit(props: ItemEditProps) {
     async function getItemPermissions() {
       await axios({
         method: 'get',
-        url: ItemApiRoutes.GET_ITEM_PERMISSIONS,
+        url: SpringItemApiRoutes.ITEM_GET_PERMISSIONS,
         params: {
-          item_id: item.id,
+          itemId: item.id,
         },
+        withCredentials: true,
       }).then((res) => {
         const itemPermissionsMappedIsChecked: CheckDataItem[] = res.data.map(
           (user: CheckDataItem) => {

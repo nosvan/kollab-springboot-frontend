@@ -38,7 +38,10 @@ import { CheckDataItem, UsersWithPermissionForList } from 'lib/types/list';
 import { TbPaperclip, TbX } from 'react-icons/tb';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { storage } from 'utils/firebaseConfig';
-import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
+import {
+  SpringItemApiRoutes,
+  SpringListApiRoutes,
+} from 'lib/api/spring_api_routes';
 
 interface NewItemProps {
   selectedDate?: Date;
@@ -223,16 +226,17 @@ export default function NewItem(props: NewItemProps) {
     async function getListUsers() {
       await axios({
         method: 'get',
-        url: ListApiRoutes.LIST_USERS,
+        url: SpringListApiRoutes.LIST_GET_USERS,
         params: {
-          list_id: listState.id,
+          listId: listState.id,
         },
+        withCredentials: true,
       }).then((res) => {
         setUsersWithPermission(res.data);
         const mappedResData = res.data.map(
           (user: UsersWithPermissionForList) => {
             return {
-              userId: user.userId,
+              userId: user.id,
               isChecked: false,
             };
           }

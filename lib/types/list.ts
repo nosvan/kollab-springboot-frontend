@@ -47,7 +47,7 @@ export type ListSliceState = {
 };
 
 export type UsersWithPermissionForList = {
-  userId: number;
+  id: number;
   firstName: string;
   lastName: string;
   email: string;

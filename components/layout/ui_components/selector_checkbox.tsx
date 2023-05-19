@@ -18,24 +18,23 @@ export default function SelectorCheckbox(props: SelectorCheckboxProps) {
         {data.map((item: UsersWithPermissionForList) => (
           <div
             className="flex flex-row items-center space-x-1 bg-stone-800 cursor-pointer mr-1 px-1 rounded-xl"
-            key={item.user_id}
+            key={item.id}
           >
             <input
               type="checkbox"
               className="checkbox checkbox-xs"
               checked={
                 selected.find(
-                  (userCheckedOrNot) =>
-                    userCheckedOrNot.user_id === item.user_id
+                  (userCheckedOrNot) => userCheckedOrNot.userId === item.id
                 )?.isChecked
                   ? true
                   : false
               }
-              id={item.user_id.toString()}
+              id={item.id.toString()}
               onChange={() => {
                 setSelected([
                   ...selected.map((checkItem) => {
-                    if (checkItem.user_id === item.user_id) {
+                    if (checkItem.userId === item.id) {
                       return {
                         ...checkItem,
                         isChecked: !checkItem.isChecked,
@@ -46,10 +45,10 @@ export default function SelectorCheckbox(props: SelectorCheckboxProps) {
                 ]);
               }}
             />
-            <label htmlFor={item.user_id.toString()}>
-              {userStore.user.id === item.user_id
+            <label htmlFor={item.id.toString()}>
+              {userStore.user.id === item.id
                 ? 'self'
-                : `${item.first_name} ${item.last_name}`}
+                : `${item.firstName} ${item.lastName}`}
             </label>
           </div>
         ))}
