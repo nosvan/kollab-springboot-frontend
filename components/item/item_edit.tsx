@@ -308,18 +308,18 @@ export default function ItemEdit(props: ItemEditProps) {
   const yupValidationSchema = Yup.object({
     id: Yup.number().required(),
     name: Yup.string().required('name is required'),
-    category: Yup.mixed<Category>().oneOf(Object.values(Category)),
+    category: Yup.mixed<Category>().oneOf([...Object.values(Category), null]),
     categoryId: editModeFormValues.category
       ? Yup.number().required()
-      : Yup.number(),
+      : Yup.number().nullable(),
     itemType: Yup.mixed<ItemType>()
       .oneOf(Object.values(ItemType))
       .default(ItemType.ASSIGNMENT),
     permissionLevel: Yup.mixed<VisibilityLevel>()
       .oneOf(Object.values(VisibilityLevel))
       .default(VisibilityLevel.PUBLIC),
-    description: Yup.string(),
-    dateTzSensitive: timeControlChecked ? Yup.date() : Yup.date(),
+    description: Yup.string().nullable(),
+    dateTzSensitive: timeControlChecked ? Yup.date() : Yup.date().nullable(),
     dateTzSensitiveEnd: timeControlChecked
       ? dateRangeControlChecked
         ? Yup.date()
@@ -329,14 +329,14 @@ export default function ItemEdit(props: ItemEditProps) {
             )
             .required('end date is required')
         : Yup.date()
-      : Yup.date(),
+      : Yup.date().nullable(),
     timeSensitiveFlag: Yup.boolean().required(),
     dateRangeFlag: Yup.boolean().required(),
     dateTzInsensitive: timeControlChecked
-      ? Yup.string()
+      ? Yup.string().nullable()
       : Yup.string().required('date is required'),
     dateTzInsensitiveEnd: timeControlChecked
-      ? Yup.string()
+      ? Yup.string().nullable()
       : dateRangeControlChecked
       ? Yup.string()
           .test(
@@ -350,7 +350,7 @@ export default function ItemEdit(props: ItemEditProps) {
             }
           )
           .required('end date is required')
-      : Yup.string(),
+      : Yup.string().nullable(),
     lastModifiedById: Yup.number(),
     itemPermissions: Yup.array().of(
       Yup.object({
@@ -555,18 +555,18 @@ export default function ItemEdit(props: ItemEditProps) {
   }
 
   async function editItemApi(formValues: EditItem) {
+    console.log('edit item api');
     if (item.category) {
       try {
         await axios({
           method: 'POST',
-          url: ListApiRoutes.EDIT_ITEM,
+          url: SpringItemApiRoutes.ITEM_UPDATE,
           data: JSON.stringify(formValues),
           headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
         }).then((res) => {
-          if (res.data.length > 0 && res.data[0].category === Category.LIST) {
-            dispatch(setAdditionalListItems(res.data));
-            dispatch(setCurrentListItem(res.data[0]));
-          }
+          dispatch(setAdditionalListItems(res.data));
+          dispatch(setCurrentListItem(res.data));
         });
       } catch (error) {
         console.log(error);
@@ -575,14 +575,13 @@ export default function ItemEdit(props: ItemEditProps) {
       try {
         await axios({
           method: 'POST',
-          url: OwnApiRoutes.EDIT_ITEM,
+          url: SpringItemApiRoutes.ITEM_UPDATE,
           data: JSON.stringify(formValues),
           headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
         }).then((res) => {
-          if (res.data.length > 0) {
-            dispatch(setAdditionalOwnItems(res.data));
-            dispatch(setCurrentOwnItem(res.data[0]));
-          }
+          dispatch(setAdditionalOwnItems(res.data));
+          dispatch(setCurrentOwnItem(res.data));
         });
       } catch (error) {
         console.log(error);

@@ -1,11 +1,6 @@
 import { ItemSafe, ItemType } from 'lib/types/item';
 import { Dispatch, SetStateAction } from 'react';
-import {
-  TbArrowBarToDown,
-  TbCalendarEvent,
-  TbClock,
-  TbSelect,
-} from 'react-icons/tb';
+import { TbArrowBarToDown, TbCalendarEvent, TbClock } from 'react-icons/tb';
 import { dateStringYYYYMMDDtoMMDDYYYYwithSlashes } from 'utils/dateUtils';
 import { storage } from 'utils/firebaseConfig';
 import { getDownloadURL, ref } from 'firebase/storage';

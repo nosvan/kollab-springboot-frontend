@@ -13,8 +13,6 @@ import styles from './item.module.css';
 import { storage } from 'utils/firebaseConfig';
 import { listAll, ref } from 'firebase/storage';
 import React from 'react';
-import { ListSliceState } from 'lib/types/list';
-import { OwnSliceState } from 'lib/types/own';
 import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
 
 export interface ItemProps {
