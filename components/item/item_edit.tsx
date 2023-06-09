@@ -1,7 +1,6 @@
 import axios from 'axios';
 import SelectorCheckbox from 'components/layout/ui_components/selector_checkbox';
 import ToggleSwitch from 'components/layout/ui_components/toggle_switch';
-import { ItemApiRoutes, ListApiRoutes, OwnApiRoutes } from 'lib/api/api_routes';
 import {
   Category,
   EditItem,
@@ -177,25 +176,27 @@ export default function ItemEdit(props: ItemEditProps) {
   }
 
   useEffect(() => {
-    if (fileSelected != null) {
-      uploadAttachments(fileSelected, item);
-    }
-  }, [fileSelected, item]);
-
-  useEffect(() => {
-    const listRef = ref(storage, `item-attachments/${item.id}`);
-    const attachmentNames: string[] = [];
-    listAll(listRef)
-      .then((res) => {
-        console.log('items from firestore: ', res.items);
-        res.items.forEach((itemRef) => {
-          attachmentNames.push(itemRef.fullPath);
+    async function getFileAttachments() {
+      const listRef = ref(storage, `item-attachments/${item.id}`);
+      const attachmentNames: string[] = [];
+      await listAll(listRef)
+        .then((res) => {
+          res.items.forEach((itemRef) => {
+            attachmentNames.push(itemRef.fullPath);
+          });
+          setFilesAttached(attachmentNames);
+        })
+        .catch((error) => {
+          console.log('error getting attachments list from firestore: ', error);
         });
-        setFilesAttached(attachmentNames);
-      })
-      .catch((error) => {
-        console.log('error getting attachments list from firestore: ', error);
-      });
+    }
+    async function upload() {
+      if (fileSelected != null) {
+        await uploadAttachments(fileSelected, item);
+        window.addEventListener('uploadCompletedEvent', getFileAttachments);
+      }
+    }
+    upload();
   }, [fileSelected, item]);
 
   useEffect(() => {

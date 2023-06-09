@@ -28,18 +28,21 @@ export default function Item(props: ItemProps) {
   const [activeStatus, setActiveStatus] = useState<boolean>(item.active);
 
   useEffect(() => {
-    const listRef = ref(storage, `item-attachments/${item.id}`);
-    const attachmentNames: string[] = [];
-    listAll(listRef)
-      .then((res) => {
-        res.items.forEach((itemRef) => {
-          attachmentNames.push(itemRef.fullPath);
+    async function getFileAttachments() {
+      const listRef = ref(storage, `item-attachments/${item.id}`);
+      const attachmentNames: string[] = [];
+      await listAll(listRef)
+        .then((res) => {
+          res.items.forEach((itemRef) => {
+            attachmentNames.push(itemRef.fullPath);
+          });
+        })
+        .catch((error) => {
+          console.log('error getting attachments list from firestore: ', error);
         });
-        setItemAttachmentsList(attachmentNames);
-      })
-      .catch((error) => {
-        console.log('error getting attachments list from firestore: ', error);
-      });
+      setItemAttachmentsList(attachmentNames);
+    }
+    getFileAttachments();
   }, [item]);
 
   return (

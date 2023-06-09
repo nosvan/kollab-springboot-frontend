@@ -51,6 +51,7 @@ interface NewItemProps {
 
 export async function uploadAttachments(files: File[], item: ItemSafe) {
   for (let i = 0; i < files.length; i++) {
+    const uploadCompletedEvent = new Event('uploadCompletedEvent');
     const file = files[i];
     if (!(file instanceof File)) continue;
     const storageRef = ref(storage, `item-attachments/${item.id}/${file.name}`);
@@ -81,6 +82,7 @@ export async function uploadAttachments(files: File[], item: ItemSafe) {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log('File available at', downloadURL);
         });
+        window.dispatchEvent(uploadCompletedEvent);
       }
     );
   }
