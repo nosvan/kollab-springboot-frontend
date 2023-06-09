@@ -52,7 +52,7 @@ export default function Index({ user }: { user: UserSafe }) {
                 onClick={() => setCreateNewItemMode(true)}
                 className="flex flex-row items-center space-x-1 text-sm bg-stone-900 hover:bg-stone-800 rounded-2xl p-2 cursor-pointer"
               >
-                <span>Add to Personal List</span>
+                <span>Add to Own List</span>
                 <TbArrowBigRight></TbArrowBigRight>
               </span>
             </div>
@@ -62,7 +62,7 @@ export default function Index({ user }: { user: UserSafe }) {
               onClick={() => setCreateNewTypeMode(true)}
               className="flex flex-row items-center space-x-1 text-sm bg-stone-900 hover:bg-stone-800 rounded-2xl p-2 cursor-pointer"
             >
-              <span>Create/Join a List</span>
+              <span>Create or Join a List</span>
               <TbArrowBigRight></TbArrowBigRight>
             </span>
           </div>

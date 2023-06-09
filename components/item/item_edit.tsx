@@ -557,6 +557,7 @@ export default function ItemEdit(props: ItemEditProps) {
   async function editItemApi(formValues: EditItem) {
     console.log('edit item api');
     if (item.category) {
+      console.log(formValues);
       try {
         await axios({
           method: 'POST',

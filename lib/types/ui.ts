@@ -7,5 +7,5 @@ export enum TabName {
 
 export enum ItemMode {
   VIEW = 'VIEW',
-  EDIT = 'EDIT'
+  EDIT = 'EDIT',
 }

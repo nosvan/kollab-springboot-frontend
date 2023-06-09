@@ -314,7 +314,7 @@ export default function NewList(props: NewListProps) {
               </span>
               <div className="flex flex-row py-5 justify-start text-center text-sm space-x-2">
                 <div
-                  className="bg-black border-2 border-white hover:bg-gray-800 hover:border-gray-300 text-white rounded-lg px-2 cursor-pointer"
+                  className="bg-stone-900 border-2 border-white hover:bg-gray-800 hover:border-gray-300 text-white rounded-lg px-2 cursor-pointer"
                   onClick={() => setCreateNewTypeMode(false)}
                 >
                   <span>Cancel</span>
