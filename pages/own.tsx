@@ -15,30 +15,25 @@ import {
 import { RootState } from 'state/redux/store';
 import { setOwnItems } from 'state/redux/ownSlice';
 import Item from 'components/item/item';
-import { setUserState } from 'state/redux/userSlice';
+import { setCurrentTab, setUserState } from 'state/redux/userSlice';
 import axios from 'axios';
 import { TabName } from 'lib/types/ui';
 import { animated, useSpring } from '@react-spring/web';
 import { ItemSafe } from 'lib/types/item';
-import { OwnApiRoutes } from 'lib/api/api_routes';
-import {
-  SpringApiRoutes,
-  SpringItemApiRoutes,
-} from 'lib/api/spring_api_routes';
+import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
 
-export default function Own({ user }: { user: UserSafe }) {
+export default function Own() {
   const dispatch = useDispatch();
   const router = useRouter();
-
+  const ownState = useSelector((state: RootState) => state.own_store);
+  const userState = useSelector((state: RootState) => state.user_store);
   useEffect(() => {
     if (!true) {
       router.push('/');
       return;
     }
-    dispatch(setUserState({ ...user, currentTab: TabName.OWN }));
+    dispatch(setCurrentTab(TabName.OWN));
   }, []);
-
-  const ownState = useSelector((state: RootState) => state.own_store);
 
   useEffect(() => {
     async function getOwnItems() {

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import {
   VisibilityLevel,
   Category,
@@ -133,9 +133,9 @@ export default function NewItem(props: NewItemProps) {
     itemType: ItemType.GENERAL,
     dateTzSensitive: selectedDateForNewItem,
     dateTzSensitiveEnd: selectedDateForNewItem,
-    timeSensitiveFlag: timeControlChecked,
-    reoccurringFlag: reoccurring,
-    dateRangeFlag: dateRangeControlChecked,
+    timeSensitiveFlag: false,
+    reoccurringFlag: false,
+    dateRangeFlag: false,
     dateTzInsensitive: selectedDateForNewItemFormattedYYYYMMDD,
     dateTzInsensitiveEnd: selectedDateForNewItemFormattedYYYYMMDD,
     lastModifiedBy: userState.user.id,
@@ -553,6 +553,7 @@ export default function NewItem(props: NewItemProps) {
   async function handleCreateItemFormSubmit(
     event: React.FormEvent<HTMLFormElement>
   ) {
+    event.preventDefault();
     trimStringsInObjectShallow(formValues);
     let yupValidateResult = await yupValidationSchema
       .validate(formValues, { abortEarly: false })
@@ -575,13 +576,11 @@ export default function NewItem(props: NewItemProps) {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         }).then(async (res) => {
-          if (res.status === 200 && res.data.category) {
-            if (res.data.category === Category.LIST) {
-              dispatch(setAdditionalListItems(res.data));
-              if (fileSelected) {
-                console.log('uploading attachment');
-                await uploadAttachments(fileSelected, res.data);
-              }
+          if (res.status === 200) {
+            dispatch(setAdditionalListItems(res.data));
+            if (fileSelected) {
+              console.log('uploading attachment');
+              await uploadAttachments(fileSelected, res.data);
             }
           }
         });
@@ -599,6 +598,7 @@ export default function NewItem(props: NewItemProps) {
           headers: { 'Content-Type': 'application/json' },
           withCredentials: true,
         }).then(async (res) => {
+          console.log('xd');
           if (res.status === 200) {
             dispatch(setAdditionalOwnItems(res.data));
             if (fileSelected) {

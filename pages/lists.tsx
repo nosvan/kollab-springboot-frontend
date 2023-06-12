@@ -1,8 +1,8 @@
 import { Layout } from 'components/layout/layout';
-import { UserSafe } from 'lib/types/user';
+import { UserSafe, UserSliceState } from 'lib/types/user';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUserState } from 'state/redux/userSlice';
+import { setCurrentTab, setUserState } from 'state/redux/userSlice';
 import axios from 'axios';
 import { RootState } from 'state/redux/store';
 import { useRouter } from 'next/router';
@@ -25,23 +25,25 @@ import {
 } from 'state/redux/listSlice';
 import { ListSafe, ListSliceState } from 'lib/types/list';
 import NewList from 'components/list/create_list';
-import { ListApiRoutes } from 'lib/api/api_routes';
 import EditList from 'components/layout/edit_list_ui';
-import {
-  SpringItemApiRoutes,
-  SpringListApiRoutes,
-} from 'lib/api/spring_api_routes';
+import { SpringListApiRoutes } from 'lib/api/spring_api_routes';
+import { TabName } from 'lib/types/ui';
 
-export default function Lists({ user }: { user: UserSafe }) {
+export default function Lists() {
   const dispatch = useDispatch();
   const router = useRouter();
-
+  const listState: ListSliceState = useSelector(
+    (state: RootState) => state.list_store
+  );
+  const userState: UserSliceState = useSelector(
+    (state: RootState) => state.user_store
+  );
   useEffect(() => {
     if (!true) {
       router.push('/');
       return;
     }
-    dispatch(setUserState({ ...user, currentTab: 'lists' }));
+    dispatch(setCurrentTab(TabName.LISTS));
     async function getUserLists() {
       await axios({
         method: 'get',
@@ -53,11 +55,7 @@ export default function Lists({ user }: { user: UserSafe }) {
       });
     }
     getUserLists();
-  }, [dispatch, router, user]);
-
-  const listState: ListSliceState = useSelector(
-    (state: RootState) => state.list_store
-  );
+  }, [dispatch, router, userState.user]);
 
   useEffect(() => {
     async function getListItems() {

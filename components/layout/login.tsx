@@ -142,8 +142,14 @@ export default function Login(props: LoginProps) {
         },
         withCredentials: true,
       }).then((res) => {
-        console.log(res);
-        dispatch(setUserState({ ...res.data, isLoggedIn: true }));
+        console.log(res.data);
+        dispatch(
+          setUserState({
+            ...res.data,
+            isLoggedIn: true,
+            currentTab: TabName.HOME,
+          })
+        );
         dispatch(setCurrentTab(TabName.HOME));
         router.push('/');
       });
