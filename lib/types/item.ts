@@ -34,6 +34,7 @@ export type Item = {
   dateTzSensitive?: Date;
   dateTzSensitiveEnd?: Date;
   timeSensitiveFlag: boolean;
+  reoccurringFlag: boolean;
   dateRangeFlag: boolean;
   dateTzInsensitive?: string;
   dateTzInsensitiveEnd?: string;
@@ -59,6 +60,7 @@ export type CreateItem = {
   dateTzSensitive?: Date;
   dateTzSensitiveEnd?: Date;
   timeSensitiveFlag: boolean;
+  reoccurringFlag: boolean;
   dateRangeFlag: boolean;
   dateTzInsensitive?: string;
   dateTzInsensitiveEnd?: string;
@@ -77,6 +79,7 @@ export type EditItem = {
   dateTzSensitive?: Date;
   dateTzSensitiveEnd?: Date;
   timeSensitiveFlag: boolean;
+  reoccurringFlag: boolean;
   dateRangeFlag: boolean;
   dateTzInsensitive?: string;
   dateTzInsensitiveEnd?: string;
@@ -95,6 +98,7 @@ export type ItemSafe = {
   dateTzSensitive?: Date;
   dateTzSensitiveEnd?: Date;
   timeSensitiveFlag: boolean;
+  reoccurringFlag: boolean;
   dateRangeFlag: boolean;
   dateTzInsensitive?: string;
   dateTzInsensitiveEnd?: string;
@@ -114,6 +118,7 @@ export type ItemSafeState = {
   dateTzSensitive?: Date;
   dateTzSensitiveEnd?: Date;
   timeSensitiveFlag?: boolean;
+  reoccurringFlag?: boolean;
   dateRangeFlag?: boolean;
   dateTzInsensitive?: string;
   dateTzInsensitiveEnd?: string;
@@ -134,6 +139,7 @@ export type ItemYupValidationError = {
   timeTzSensitive: boolean;
   timeTzSensitiveEnd: boolean;
   timeSensitiveFlag: boolean;
+  reoccurringFlag: boolean;
   dateRangeFlag: boolean;
   dateTzInsensitive: boolean;
   dateTzInsensitiveEnd: boolean;
@@ -153,6 +159,7 @@ export type ItemEditYupValidationError = {
   timeTzSensitive: boolean;
   timeTzSensitiveEnd: boolean;
   timeSensitiveFlag: boolean;
+  reoccurringFlag: boolean;
   dateRangeFlag: boolean;
   dateTzInsensitive: boolean;
   dateTzInsensitiveEnd: boolean;

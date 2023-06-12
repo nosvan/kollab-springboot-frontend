@@ -32,7 +32,6 @@ import { dateRangeValid, dateToYYYYMMDD } from 'utils/dateUtils';
 import { FooterInputs } from './footer_inputs';
 import { getTimeCeiling } from 'utils/dateUtils';
 import { DateInputs } from './date_inputs';
-import { ListApiRoutes, OwnApiRoutes } from 'lib/api/api_routes';
 import SelectorCheckbox from 'components/layout/ui_components/selector_checkbox';
 import { CheckDataItem, UsersWithPermissionForList } from 'lib/types/list';
 import { TbPaperclip, TbX } from 'react-icons/tb';
@@ -51,7 +50,6 @@ interface NewItemProps {
 
 export async function uploadAttachments(files: File[], item: ItemSafe) {
   for (let i = 0; i < files.length; i++) {
-    const uploadCompletedEvent = new Event('uploadCompletedEvent');
     const file = files[i];
     if (!(file instanceof File)) continue;
     const storageRef = ref(storage, `item-attachments/${item.id}/${file.name}`);
@@ -79,6 +77,7 @@ export async function uploadAttachments(files: File[], item: ItemSafe) {
         console.log('error uploading attachment\n', error);
       },
       () => {
+        const uploadCompletedEvent = new Event('uploadCompletedEvent');
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log('File available at', downloadURL);
         });
@@ -100,6 +99,7 @@ export default function NewItem(props: NewItemProps) {
 
   const [visibilityControlCheck, setVisibilityControlCheck] = useState(false);
   const [timeControlChecked, setTimeControlChecked] = useState(false);
+  const [reoccurring, setReoccurring] = useState(false);
   const [dateRangeControlChecked, setDateRangeControlChecked] = useState(false);
   const [selectedDateForNewItemFormattedYYYYMMDD] = useState(() =>
     dateToYYYYMMDD(selectedDate ?? new Date())
@@ -134,6 +134,7 @@ export default function NewItem(props: NewItemProps) {
     dateTzSensitive: selectedDateForNewItem,
     dateTzSensitiveEnd: selectedDateForNewItem,
     timeSensitiveFlag: timeControlChecked,
+    reoccurringFlag: reoccurring,
     dateRangeFlag: dateRangeControlChecked,
     dateTzInsensitive: selectedDateForNewItemFormattedYYYYMMDD,
     dateTzInsensitiveEnd: selectedDateForNewItemFormattedYYYYMMDD,
@@ -206,6 +207,15 @@ export default function NewItem(props: NewItemProps) {
       });
     }
   }, [datePart, datePartEnd, timeControlChecked, timePart, timePartEnd]);
+
+  useEffect(() => {
+    setFormValues((prevState) => {
+      return {
+        ...prevState,
+        reoccurringFlag: reoccurring,
+      };
+    });
+  }, [reoccurring]);
 
   useEffect(() => {
     setFormValues((prevState) => {
@@ -307,6 +317,7 @@ export default function NewItem(props: NewItemProps) {
         : Yup.date()
       : Yup.date(),
     timeSensitiveFlag: Yup.boolean().required(),
+    reoccurringFlag: Yup.boolean().required(),
     dateRangeFlag: Yup.boolean().required(),
     dateTzInsensitive: timeControlChecked
       ? Yup.string()
@@ -343,6 +354,7 @@ export default function NewItem(props: NewItemProps) {
       timeTzSensitive: false,
       timeTzSensitiveEnd: false,
       timeSensitiveFlag: false,
+      reoccurringFlag: false,
       dateRangeFlag: false,
       dateTzInsensitive: false,
       dateTzInsensitiveEnd: false,
@@ -459,6 +471,15 @@ export default function NewItem(props: NewItemProps) {
                 ></ToggleSwitch>
               </span>
             </span>
+            <span className="flex flex-col space-y-1">
+              <span className="flex flex-row space-x-1 ">
+                <label className="text-white px-1">reoccurring</label>
+                <ToggleSwitch
+                  isChecked={reoccurring}
+                  setIsChecked={setReoccurring}
+                ></ToggleSwitch>
+              </span>
+            </span>
             <span>
               <DateInputs
                 formValues={formValues}
@@ -532,7 +553,6 @@ export default function NewItem(props: NewItemProps) {
   async function handleCreateItemFormSubmit(
     event: React.FormEvent<HTMLFormElement>
   ) {
-    event.preventDefault();
     trimStringsInObjectShallow(formValues);
     let yupValidateResult = await yupValidationSchema
       .validate(formValues, { abortEarly: false })
@@ -583,7 +603,7 @@ export default function NewItem(props: NewItemProps) {
             dispatch(setAdditionalOwnItems(res.data));
             if (fileSelected) {
               console.log('uploading attachment');
-              await uploadAttachments(fileSelected, res.data[0]);
+              await uploadAttachments(fileSelected, res.data);
             }
           }
         });

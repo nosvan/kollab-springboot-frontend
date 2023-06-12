@@ -21,6 +21,7 @@ const initialState: ListSliceState = {
     dateTzSensitive: undefined,
     dateTzSensitiveEnd: undefined,
     timeSensitiveFlag: false,
+    reoccurringFlag: false,
     dateRangeFlag: false,
     dateTzInsensitive: undefined,
     dateTzInsensitiveEnd: undefined,

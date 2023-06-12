@@ -75,6 +75,7 @@ export default function ItemEdit(props: ItemEditProps) {
     if (item.timeSensitiveFlag) return true;
     else return false;
   });
+  const [reoccurring, setReoccurring] = useState(item.reoccurringFlag);
   const [dateRangeControlChecked, setDateRangeControlChecked] = useState(() => {
     if (item.dateRangeFlag) return true;
     else return false;
@@ -136,9 +137,10 @@ export default function ItemEdit(props: ItemEditProps) {
     dateTzInsensitive: item.dateTzInsensitive,
     dateTzInsensitiveEnd: item.dateTzInsensitiveEnd,
     timeSensitiveFlag: item.timeSensitiveFlag,
+    reoccurringFlag: reoccurring,
+    dateRangeFlag: item.dateRangeFlag,
     dateTzSensitive: item.dateTzSensitive,
     dateTzSensitiveEnd: item.dateTzSensitiveEnd,
-    dateRangeFlag: item.dateRangeFlag,
     permissionLevel:
       VisibilityLevel[item.permissionLevel as keyof typeof VisibilityLevel],
     itemPermissions: [],
@@ -158,6 +160,14 @@ export default function ItemEdit(props: ItemEditProps) {
     });
   }, [activeStatus]);
 
+  useEffect(() => {
+    setEditModeFormValues((prevState) => {
+      let form = prevState;
+      form.reoccurringFlag = reoccurring;
+      return form;
+    });
+  }, [reoccurring]);
+
   function focus() {
     if (fileInput.current) {
       fileInput.current.click();
@@ -168,7 +178,6 @@ export default function ItemEdit(props: ItemEditProps) {
     e.preventDefault();
     const target = e.currentTarget as HTMLInputElement;
     if (target.files !== null) {
-      console.log(target.files);
       setFileSelected([...target.files]);
     } else {
       setFileSelected(null);
@@ -192,11 +201,14 @@ export default function ItemEdit(props: ItemEditProps) {
     }
     async function upload() {
       if (fileSelected != null) {
-        await uploadAttachments(fileSelected, item);
         window.addEventListener('uploadCompletedEvent', getFileAttachments);
+        await uploadAttachments(fileSelected, item);
       }
     }
     upload();
+    return () => {
+      window.removeEventListener('uploadCompletedEvent', getFileAttachments);
+    };
   }, [fileSelected, item]);
 
   useEffect(() => {
@@ -332,6 +344,7 @@ export default function ItemEdit(props: ItemEditProps) {
         : Yup.date()
       : Yup.date().nullable(),
     timeSensitiveFlag: Yup.boolean().required(),
+    reoccurringFlag: Yup.boolean().required(),
     dateRangeFlag: Yup.boolean().required(),
     dateTzInsensitive: timeControlChecked
       ? Yup.string().nullable()
@@ -375,6 +388,7 @@ export default function ItemEdit(props: ItemEditProps) {
       timeTzSensitive: false,
       timeTzSensitiveEnd: false,
       timeSensitiveFlag: false,
+      reoccurringFlag: false,
       dateRangeFlag: false,
       dateTzInsensitive: false,
       dateTzInsensitiveEnd: false,
@@ -465,6 +479,15 @@ export default function ItemEdit(props: ItemEditProps) {
             <ToggleSwitch
               isChecked={timeControlChecked}
               setIsChecked={setTimeControlChecked}
+            ></ToggleSwitch>
+          </span>
+        </span>
+        <span className="flex flex-col space-y-1">
+          <span className="flex flex-row space-x-1 ">
+            <label className="text-white px-1">reoccurring</label>
+            <ToggleSwitch
+              isChecked={reoccurring}
+              setIsChecked={setReoccurring}
             ></ToggleSwitch>
           </span>
         </span>
