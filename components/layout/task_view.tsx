@@ -1,8 +1,10 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import {
+  dateStringYYYYMMDDtoLongDayOfWeek,
   dateToDayName,
   dateToMonthName,
   dateToYYYYMMDD,
+  weekArrayIndex,
 } from 'utils/dateUtils';
 import styles from './task_view.module.css';
 import ModalPopup from './modal';
@@ -16,8 +18,8 @@ import { BiCalendarStar } from 'react-icons/bi';
 import { TbClock } from 'react-icons/tb';
 import { MdDateRange } from 'react-icons/md';
 import axios from 'axios';
-import { ItemApiRoutes, ListApiRoutes } from 'lib/api/api_routes';
 import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
+import { getDay } from 'date-fns';
 
 interface TaskViewProps {
   dayLayout: number;
@@ -39,39 +41,77 @@ export default function TaskView(props: TaskViewProps) {
 
   const ItemsTimeInsensitiveTaskView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
-    return items
-      .filter((itemA) => {
+    const dayInLongDayName = weekArrayIndex[getDay(day)];
+    const itemPart1 = items
+      .filter((item) => {
         if (
-          itemA.dateTzInsensitive &&
-          !itemA.dateRangeFlag &&
-          itemA.dateTzInsensitive == dayInYYYYMMDD
+          item.dateTzInsensitive === dayInYYYYMMDD &&
+          item.reoccurringFlag === false &&
+          item.dateTzInsensitive &&
+          !item.dateRangeFlag
         ) {
           return true;
-        } else {
-          return false;
-        }
+        } else return false;
       })
-      .map((itemB) => {
+      .map((item) => {
         return (
           <div
-            key={itemB.id}
-            onClick={() => handleItemClick(itemB)}
+            key={item.id}
+            onClick={() => handleItemClick(item)}
             className={`flex flex-row items-center space-x-0.5 rounded-md
             justify-start text-black ${itemTypeStyling(
-              itemB.itemType
+              item.itemType
             )} cursor-pointer ${styles.mobilePadding}`}
           >
             <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
             <span
               className={`text-xs truncate ${
-                !itemB.active ? 'line-through' : ''
+                !item.active ? 'line-through' : ''
               }`}
             >
-              {itemB.name}
+              {item.name}
             </span>
           </div>
         );
       });
+    const itemPart2 = items
+      .filter((item) => {
+        if (!item.dateTzInsensitive) return false;
+        const longDayOfWeekOfItem =
+          weekArrayIndex[
+            dateStringYYYYMMDDtoLongDayOfWeek(item.dateTzInsensitive)
+          ];
+        if (
+          item.reoccurringFlag === true &&
+          longDayOfWeekOfItem === dayInLongDayName &&
+          item.dateTzInsensitive &&
+          !item.dateRangeFlag
+        ) {
+          return true;
+        } else return false;
+      })
+      .map((item) => {
+        return (
+          <div
+            key={item.id}
+            onClick={() => handleItemClick(item)}
+            className={`flex flex-row items-center space-x-0.5 rounded-md
+            justify-start text-black ${itemTypeStyling(
+              item.itemType
+            )} cursor-pointer ${styles.mobilePadding}`}
+          >
+            <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
+            <span
+              className={`text-xs truncate ${
+                !item.active ? 'line-through' : ''
+              }`}
+            >
+              {item.name}
+            </span>
+          </div>
+        );
+      });
+    return [...itemPart1, ...itemPart2];
   };
 
   const ItemsTimeInsensitiveEventView = (day: Date, items: ItemSafe[]) => {
