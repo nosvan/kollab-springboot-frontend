@@ -1,13 +1,12 @@
 import { Category, ItemSafe } from 'lib/types/item';
 import styles from './time_insensitive_task_item.module.css';
-import { getItem, itemTypeStyling } from '../task_view';
-import { BiCalendarStar } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 import { setCurrentOwnItem } from 'state/redux/ownSlice';
 import { setCurrentListItem } from 'state/redux/listSlice';
 import { Dispatch, SetStateAction } from 'react';
 import { MdDateRange } from 'react-icons/md';
 import { TbClock } from 'react-icons/tb';
+import { itemTypeStyling, getItem } from 'components/layout/task_view';
 
 interface TaskSensitiveEventItemProps {
   item: ItemSafe;

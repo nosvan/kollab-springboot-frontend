@@ -64,7 +64,7 @@ export default function Item(props: ItemProps) {
             onClick={handleDelete}
           ></TbTrash>
         )}
-        {!activeStatus && (
+        {!item.reoccurringFlag && !activeStatus && (
           <React.Fragment>
             {itemMode === ItemMode.EDIT && (
               <TbSquareCheck
@@ -74,7 +74,7 @@ export default function Item(props: ItemProps) {
             )}
           </React.Fragment>
         )}
-        {activeStatus && (
+        {!item.reoccurringFlag && activeStatus && (
           <React.Fragment>
             {itemMode === ItemMode.EDIT && (
               <TbSquare

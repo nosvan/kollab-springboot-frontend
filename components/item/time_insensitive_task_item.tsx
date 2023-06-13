@@ -1,21 +1,20 @@
 import { Category, ItemSafe } from 'lib/types/item';
 import styles from './time_insensitive_task_item.module.css';
-import { getItem, itemTypeStyling } from '../task_view';
 import { BiCalendarStar } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 import { setCurrentOwnItem } from 'state/redux/ownSlice';
 import { setCurrentListItem } from 'state/redux/listSlice';
 import { Dispatch, SetStateAction } from 'react';
-import { TbClock } from 'react-icons/tb';
+import { itemTypeStyling, getItem } from 'components/layout/task_view';
 
-interface TaskSensitiveTaskItemProps {
+interface TaskInsensitiveTaskItemProps {
   item: ItemSafe;
   setViewItemMode: Dispatch<SetStateAction<boolean>>;
   category?: Category;
 }
 
-export default function TimeSensitiveTaskItem(
-  props: TaskSensitiveTaskItemProps
+export default function TimeInsensitiveTaskItem(
+  props: TaskInsensitiveTaskItemProps
 ) {
   const dispatch = useDispatch();
   const { item, setViewItemMode, category } = props;
@@ -24,14 +23,11 @@ export default function TimeSensitiveTaskItem(
       key={item.id}
       onClick={() => handleItemClick(item)}
       className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
+    justify-start text-black ${itemTypeStyling(item.itemType)} cursor-pointer ${
+        styles.mobilePadding
+      }`}
     >
-      <span className="flex flex-row">
-        <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
-        <TbClock className={`${styles.iconStyle}`}></TbClock>
-      </span>
+      <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
       <span
         className={`text-xs truncate ${!item.active ? 'line-through' : ''}`}
       >

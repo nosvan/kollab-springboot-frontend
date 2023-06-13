@@ -10,17 +10,15 @@ import styles from './task_view.module.css';
 import ModalPopup from './modal';
 import { Category, ItemSafe } from 'lib/types/item';
 import { useDispatch } from 'react-redux';
-import { setCurrentOwnItem } from 'state/redux/ownSlice';
 import { animated, useSpring } from '@react-spring/web';
 import NewItem from 'components/item/create_item';
-import { setCurrentListItem } from 'state/redux/listSlice';
 import axios from 'axios';
 import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
 import { getDay } from 'date-fns';
-import TimeInsensitiveTaskItem from './ui_components/time_insensitive_task_item';
-import TimeInsensitiveEventItem from './ui_components/time_insensitive_event_item';
-import TimeSensitiveTaskItem from './ui_components/time_sensitive_task_item';
-import TimeSensitiveEventItem from './ui_components/time_sensitive_event_item';
+import TimeInsensitiveTaskItem from 'components/item/time_insensitive_task_item';
+import TimeInsensitiveEventItem from 'components/item/time_insensitive_event_item';
+import TimeSensitiveTaskItem from 'components/item/time_sensitive_task_item';
+import TimeSensitiveEventItem from 'components/item/time_sensitive_event_item';
 
 interface TaskViewProps {
   dayLayout: number;
@@ -73,7 +71,6 @@ export async function getItem(item: ItemSafe) {
 }
 
 export default function TaskView(props: TaskViewProps) {
-  const dispatch = useDispatch();
   const { category, setViewItemMode } = props;
   const currentDateString = new Date().toDateString();
   const [createNewItemMode, setCreateNewItemMode] = useState(false);
@@ -81,207 +78,211 @@ export default function TaskView(props: TaskViewProps) {
   const ItemsTimeInsensitiveTaskView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
     const dayInLongDayName = weekArrayIndex[getDay(day)];
-    const itemPart1 = items
-      .filter((item) => {
-        if (
-          item.dateTzInsensitive === dayInYYYYMMDD &&
-          !item.reoccurringFlag &&
-          item.dateTzInsensitive &&
-          !item.dateRangeFlag
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeInsensitiveTaskItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeInsensitiveTaskItem>
-        );
-      });
-    const itemPart2 = items
-      .filter((item) => {
-        if (!item.dateTzInsensitive) return false;
-        const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
-          item.dateTzInsensitive
-        );
-        if (
-          item.reoccurringFlag &&
-          longDayOfWeekOfItem === dayInLongDayName &&
-          item.dateTzInsensitive &&
-          !item.dateRangeFlag
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeInsensitiveTaskItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeInsensitiveTaskItem>
-        );
-      });
-    return [...itemPart1, ...itemPart2];
+    return [
+      ...items
+        .filter((item) => {
+          if (
+            item.dateTzInsensitive === dayInYYYYMMDD &&
+            !item.reoccurringFlag &&
+            item.dateTzInsensitive &&
+            !item.dateRangeFlag
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeInsensitiveTaskItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeInsensitiveTaskItem>
+          );
+        }),
+      ...items
+        .filter((item) => {
+          if (!item.dateTzInsensitive) return false;
+          const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
+            item.dateTzInsensitive
+          );
+          if (
+            item.reoccurringFlag &&
+            longDayOfWeekOfItem === dayInLongDayName &&
+            item.dateTzInsensitive &&
+            !item.dateRangeFlag
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeInsensitiveTaskItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeInsensitiveTaskItem>
+          );
+        }),
+    ];
   };
 
   const ItemsTimeInsensitiveEventView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
     const dayInLongDayName = weekArrayIndex[getDay(day)];
-    const itemsPart1 = items
-      .filter((item) => {
-        if (
-          item.dateRangeFlag &&
-          item.dateTzInsensitive === dayInYYYYMMDD &&
-          !item.reoccurringFlag &&
-          item.dateTzInsensitive
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeInsensitiveEventItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeInsensitiveEventItem>
-        );
-      });
-    const itemsPart2 = items
-      .filter((item) => {
-        if (!item.dateTzInsensitive) return false;
-        const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
-          item.dateTzInsensitive
-        );
-        if (
-          item.dateRangeFlag &&
-          longDayOfWeekOfItem === dayInLongDayName &&
-          item.reoccurringFlag &&
-          item.dateTzInsensitive
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeInsensitiveEventItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeInsensitiveEventItem>
-        );
-      });
-    return [...itemsPart1, ...itemsPart2];
+    return [
+      ...items
+        .filter((item) => {
+          if (
+            item.dateRangeFlag &&
+            item.dateTzInsensitive === dayInYYYYMMDD &&
+            !item.reoccurringFlag &&
+            item.dateTzInsensitive
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeInsensitiveEventItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeInsensitiveEventItem>
+          );
+        }),
+      ...items
+        .filter((item) => {
+          if (!item.dateTzInsensitive) return false;
+          const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
+            item.dateTzInsensitive
+          );
+          if (
+            item.dateRangeFlag &&
+            longDayOfWeekOfItem === dayInLongDayName &&
+            item.reoccurringFlag &&
+            item.dateTzInsensitive
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeInsensitiveEventItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeInsensitiveEventItem>
+          );
+        }),
+    ];
   };
 
   const ItemsTimeSensitiveTaskView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
     const dayInLongDayName = weekArrayIndex[getDay(day)];
-    const itemsPart1 = items
-      .filter((item) => {
-        if (
-          !item.reoccurringFlag &&
-          item.dateTzSensitive &&
-          !item.dateRangeFlag &&
-          dateToYYYYMMDD(item.dateTzSensitive) == dayInYYYYMMDD
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeSensitiveTaskItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeSensitiveTaskItem>
-        );
-      });
-    const itemsPart2 = items
-      .filter((item) => {
-        if (
-          item.reoccurringFlag &&
-          item.dateTzSensitive &&
-          !item.dateRangeFlag &&
-          dateStringYYYYMMDDtoLongDayOfWeek(
-            dateToYYYYMMDD(item.dateTzSensitive)
-          ) === dayInLongDayName
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeSensitiveTaskItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeSensitiveTaskItem>
-        );
-      });
-    return [...itemsPart1, ...itemsPart2];
+    return [
+      ...items
+        .filter((item) => {
+          if (
+            !item.reoccurringFlag &&
+            item.dateTzSensitive &&
+            !item.dateRangeFlag &&
+            dateToYYYYMMDD(item.dateTzSensitive) == dayInYYYYMMDD
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeSensitiveTaskItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeSensitiveTaskItem>
+          );
+        }),
+      ...items
+        .filter((item) => {
+          if (
+            item.reoccurringFlag &&
+            item.dateTzSensitive &&
+            !item.dateRangeFlag &&
+            dateStringYYYYMMDDtoLongDayOfWeek(
+              dateToYYYYMMDD(item.dateTzSensitive)
+            ) === dayInLongDayName
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeSensitiveTaskItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeSensitiveTaskItem>
+          );
+        }),
+    ];
   };
 
   const ItemsTimeSensitiveEventView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
     const dayInLongDayName = weekArrayIndex[getDay(day)];
-    const itemsPart1 = items
-      .filter((item) => {
-        if (
-          !item.reoccurringFlag &&
-          item.dateTzSensitive &&
-          item.dateRangeFlag &&
-          item.dateTzSensitiveEnd &&
-          dateToYYYYMMDD(item.dateTzSensitive) == dayInYYYYMMDD
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeSensitiveEventItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeSensitiveEventItem>
-        );
-      });
-    const itemsPart2 = items
-      .filter((item) => {
-        if (
-          item.reoccurringFlag &&
-          item.dateTzSensitive &&
-          item.dateRangeFlag &&
-          item.dateTzSensitiveEnd &&
-          dateStringYYYYMMDDtoLongDayOfWeek(
-            dateToYYYYMMDD(item.dateTzSensitive)
-          ) === dayInLongDayName
-        ) {
-          return true;
-        } else return false;
-      })
-      .map((item) => {
-        return (
-          <TimeSensitiveEventItem
-            key={item.id}
-            item={item}
-            setViewItemMode={setViewItemMode}
-            category={category}
-          ></TimeSensitiveEventItem>
-        );
-      });
-    return [...itemsPart1, ...itemsPart2];
+    return [
+      ...items
+        .filter((item) => {
+          if (
+            !item.reoccurringFlag &&
+            item.dateTzSensitive &&
+            item.dateRangeFlag &&
+            item.dateTzSensitiveEnd &&
+            dateToYYYYMMDD(item.dateTzSensitive) == dayInYYYYMMDD
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeSensitiveEventItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeSensitiveEventItem>
+          );
+        }),
+      ...items
+        .filter((item) => {
+          if (
+            item.reoccurringFlag &&
+            item.dateTzSensitive &&
+            item.dateRangeFlag &&
+            item.dateTzSensitiveEnd &&
+            dateStringYYYYMMDDtoLongDayOfWeek(
+              dateToYYYYMMDD(item.dateTzSensitive)
+            ) === dayInLongDayName
+          ) {
+            return true;
+          } else return false;
+        })
+        .map((item) => {
+          return (
+            <TimeSensitiveEventItem
+              key={item.id}
+              item={item}
+              setViewItemMode={setViewItemMode}
+              category={category}
+            ></TimeSensitiveEventItem>
+          );
+        }),
+    ];
   };
 
   const taskViewSpring = useSpring({
@@ -341,19 +342,4 @@ export default function TaskView(props: TaskViewProps) {
       )}
     </animated.div>
   );
-
-  async function handleItemClick(item: ItemSafe) {
-    if (props.category) {
-      switch (props.category) {
-        case Category.LIST:
-          const itemRefreshed = await getItem(item);
-          dispatch(setCurrentListItem(itemRefreshed));
-          break;
-      }
-    } else {
-      const itemRefreshed = await getItem(item);
-      dispatch(setCurrentOwnItem(itemRefreshed));
-    }
-    props.setViewItemMode(true);
-  }
 }

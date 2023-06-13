@@ -1,20 +1,20 @@
 import { Category, ItemSafe } from 'lib/types/item';
 import styles from './time_insensitive_task_item.module.css';
-import { getItem, itemTypeStyling } from '../task_view';
-import { BiCalendarStar } from 'react-icons/bi';
+import { getItem, itemTypeStyling } from '../layout/task_view';
 import { useDispatch } from 'react-redux';
 import { setCurrentOwnItem } from 'state/redux/ownSlice';
 import { setCurrentListItem } from 'state/redux/listSlice';
 import { Dispatch, SetStateAction } from 'react';
+import { MdDateRange } from 'react-icons/md';
 
-interface TaskInsensitiveTaskItemProps {
+interface TaskInsensitiveEventItemProps {
   item: ItemSafe;
   setViewItemMode: Dispatch<SetStateAction<boolean>>;
   category?: Category;
 }
 
-export default function TimeInsensitiveTaskItem(
-  props: TaskInsensitiveTaskItemProps
+export default function TimeInsensitiveEventItem(
+  props: TaskInsensitiveEventItemProps
 ) {
   const dispatch = useDispatch();
   const { item, setViewItemMode, category } = props;
@@ -27,7 +27,7 @@ export default function TimeInsensitiveTaskItem(
         styles.mobilePadding
       }`}
     >
-      <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
+      <MdDateRange className={`${styles.iconStyle}`}></MdDateRange>
       <span
         className={`text-xs truncate ${!item.active ? 'line-through' : ''}`}
       >
