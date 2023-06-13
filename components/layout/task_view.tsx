@@ -14,12 +14,13 @@ import { setCurrentOwnItem } from 'state/redux/ownSlice';
 import { animated, useSpring } from '@react-spring/web';
 import NewItem from 'components/item/create_item';
 import { setCurrentListItem } from 'state/redux/listSlice';
-import { BiCalendarStar } from 'react-icons/bi';
-import { TbClock } from 'react-icons/tb';
-import { MdDateRange } from 'react-icons/md';
 import axios from 'axios';
 import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
 import { getDay } from 'date-fns';
+import TimeInsensitiveTaskItem from './ui_components/time_insensitive_task_item';
+import TimeInsensitiveEventItem from './ui_components/time_insensitive_event_item';
+import TimeSensitiveTaskItem from './ui_components/time_sensitive_task_item';
+import TimeSensitiveEventItem from './ui_components/time_sensitive_event_item';
 
 interface TaskViewProps {
   dayLayout: number;
@@ -34,8 +35,46 @@ interface TaskViewProps {
   setViewItemMode: Dispatch<SetStateAction<boolean>>;
 }
 
+export function itemTypeStyling(itemType: string) {
+  switch (itemType) {
+    case 'ASSIGNMENT':
+      return 'bg-emerald-400 hover:bg-emerald-300';
+    case 'NOTE':
+      return 'bg-cyan-400 hover:bg-cyan-300';
+    case 'PROJECT':
+      return 'bg-purple-400 hover:bg-purple-300';
+    case 'REMINDER':
+      return 'bg-indigo-400 hover:bg-indigo-300';
+    case 'MEETING':
+      return 'bg-rose-400 hover:bg-rose-300';
+    case 'TEST':
+      return 'bg-blue-400 hover:bg-blue-300';
+    default:
+      return 'bg-stone-100 hover:bg-white';
+  }
+}
+
+export async function getItem(item: ItemSafe) {
+  try {
+    return axios({
+      method: 'GET',
+      url: SpringItemApiRoutes.ITEM_GET,
+      headers: { 'Content-Type': 'application/json' },
+      params: {
+        itemId: item.id,
+      },
+      withCredentials: true,
+    }).then((res) => {
+      return res.data;
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export default function TaskView(props: TaskViewProps) {
   const dispatch = useDispatch();
+  const { category, setViewItemMode } = props;
   const currentDateString = new Date().toDateString();
   const [createNewItemMode, setCreateNewItemMode] = useState(false);
 
@@ -55,23 +94,12 @@ export default function TaskView(props: TaskViewProps) {
       })
       .map((item) => {
         return (
-          <div
+          <TimeInsensitiveTaskItem
             key={item.id}
-            onClick={() => handleItemClick(item)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
-            <span
-              className={`text-xs truncate ${
-                !item.active ? 'line-through' : ''
-              }`}
-            >
-              {item.name}
-            </span>
-          </div>
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeInsensitiveTaskItem>
         );
       });
     const itemPart2 = items
@@ -91,23 +119,12 @@ export default function TaskView(props: TaskViewProps) {
       })
       .map((item) => {
         return (
-          <div
+          <TimeInsensitiveTaskItem
             key={item.id}
-            onClick={() => handleItemClick(item)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <BiCalendarStar className={`${styles.iconStyle}`}></BiCalendarStar>
-            <span
-              className={`text-xs truncate ${
-                !item.active ? 'line-through' : ''
-              }`}
-            >
-              {item.name}
-            </span>
-          </div>
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeInsensitiveTaskItem>
         );
       });
     return [...itemPart1, ...itemPart2];
@@ -117,35 +134,24 @@ export default function TaskView(props: TaskViewProps) {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
     const dayInLongDayName = weekArrayIndex[getDay(day)];
     const itemsPart1 = items
-      .filter((itemA) => {
+      .filter((item) => {
         if (
-          itemA.dateRangeFlag &&
-          itemA.dateTzInsensitive === dayInYYYYMMDD &&
-          !itemA.reoccurringFlag &&
-          itemA.dateTzInsensitive
+          item.dateRangeFlag &&
+          item.dateTzInsensitive === dayInYYYYMMDD &&
+          !item.reoccurringFlag &&
+          item.dateTzInsensitive
         ) {
           return true;
         } else return false;
       })
-      .map((itemB) => {
+      .map((item) => {
         return (
-          <div
-            key={itemB.id}
-            onClick={() => handleItemClick(itemB)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              itemB.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <MdDateRange className={`${styles.iconStyle}`}></MdDateRange>
-            <span
-              className={`text-xs truncate ${
-                !itemB.active ? 'line-through' : ''
-              }`}
-            >
-              {itemB.name}
-            </span>
-          </div>
+          <TimeInsensitiveEventItem
+            key={item.id}
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeInsensitiveEventItem>
         );
       });
     const itemsPart2 = items
@@ -165,23 +171,12 @@ export default function TaskView(props: TaskViewProps) {
       })
       .map((item) => {
         return (
-          <div
+          <TimeInsensitiveEventItem
             key={item.id}
-            onClick={() => handleItemClick(item)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <MdDateRange className={`${styles.iconStyle}`}></MdDateRange>
-            <span
-              className={`text-xs truncate ${
-                !item.active ? 'line-through' : ''
-              }`}
-            >
-              {item.name}
-            </span>
-          </div>
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeInsensitiveEventItem>
         );
       });
     return [...itemsPart1, ...itemsPart2];
@@ -203,28 +198,12 @@ export default function TaskView(props: TaskViewProps) {
       })
       .map((item) => {
         return (
-          <div
+          <TimeSensitiveTaskItem
             key={item.id}
-            onClick={() => handleItemClick(item)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <span className="flex flex-row">
-              <BiCalendarStar
-                className={`${styles.iconStyle}`}
-              ></BiCalendarStar>
-              <TbClock className={`${styles.iconStyle}`}></TbClock>
-            </span>
-            <span
-              className={`text-xs truncate ${
-                !item.active ? 'line-through' : ''
-              }`}
-            >
-              {item.name}
-            </span>
-          </div>
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeSensitiveTaskItem>
         );
       });
     const itemsPart2 = items
@@ -242,28 +221,12 @@ export default function TaskView(props: TaskViewProps) {
       })
       .map((item) => {
         return (
-          <div
+          <TimeSensitiveTaskItem
             key={item.id}
-            onClick={() => handleItemClick(item)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <span className="flex flex-row">
-              <BiCalendarStar
-                className={`${styles.iconStyle}`}
-              ></BiCalendarStar>
-              <TbClock className={`${styles.iconStyle}`}></TbClock>
-            </span>
-            <span
-              className={`text-xs truncate ${
-                !item.active ? 'line-through' : ''
-              }`}
-            >
-              {item.name}
-            </span>
-          </div>
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeSensitiveTaskItem>
         );
       });
     return [...itemsPart1, ...itemsPart2];
@@ -286,28 +249,12 @@ export default function TaskView(props: TaskViewProps) {
       })
       .map((item) => {
         return (
-          <div
+          <TimeSensitiveEventItem
             key={item.id}
-            onClick={() => handleItemClick(item)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <span className="flex flex-row">
-              <MdDateRange
-                className={`${styles.iconStyle} pb-0.5`}
-              ></MdDateRange>
-              <TbClock className={`${styles.iconStyle}`}></TbClock>
-            </span>
-            <span
-              className={`text-xs truncate ${
-                !item.active ? 'line-through' : ''
-              }`}
-            >
-              {item.name}
-            </span>
-          </div>
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeSensitiveEventItem>
         );
       });
     const itemsPart2 = items
@@ -326,28 +273,12 @@ export default function TaskView(props: TaskViewProps) {
       })
       .map((item) => {
         return (
-          <div
+          <TimeSensitiveEventItem
             key={item.id}
-            onClick={() => handleItemClick(item)}
-            className={`flex flex-row items-center space-x-0.5 rounded-md
-            justify-start text-black ${itemTypeStyling(
-              item.itemType
-            )} cursor-pointer ${styles.mobilePadding}`}
-          >
-            <span className="flex flex-row">
-              <MdDateRange
-                className={`${styles.iconStyle} pb-0.5`}
-              ></MdDateRange>
-              <TbClock className={`${styles.iconStyle}`}></TbClock>
-            </span>
-            <span
-              className={`text-xs truncate ${
-                !item.active ? 'line-through' : ''
-              }`}
-            >
-              {item.name}
-            </span>
-          </div>
+            item={item}
+            setViewItemMode={setViewItemMode}
+            category={category}
+          ></TimeSensitiveEventItem>
         );
       });
     return [...itemsPart1, ...itemsPart2];
@@ -424,42 +355,5 @@ export default function TaskView(props: TaskViewProps) {
       dispatch(setCurrentOwnItem(itemRefreshed));
     }
     props.setViewItemMode(true);
-  }
-
-  async function getItem(item: ItemSafe) {
-    try {
-      return axios({
-        method: 'GET',
-        url: SpringItemApiRoutes.ITEM_GET,
-        headers: { 'Content-Type': 'application/json' },
-        params: {
-          itemId: item.id,
-        },
-        withCredentials: true,
-      }).then((res) => {
-        return res.data;
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  function itemTypeStyling(itemType: string) {
-    switch (itemType) {
-      case 'ASSIGNMENT':
-        return 'bg-emerald-400 hover:bg-emerald-300';
-      case 'NOTE':
-        return 'bg-cyan-400 hover:bg-cyan-300';
-      case 'PROJECT':
-        return 'bg-purple-400 hover:bg-purple-300';
-      case 'REMINDER':
-        return 'bg-indigo-400 hover:bg-indigo-300';
-      case 'MEETING':
-        return 'bg-rose-400 hover:bg-rose-300';
-      case 'TEST':
-        return 'bg-blue-400 hover:bg-blue-300';
-      default:
-        return 'bg-stone-100 hover:bg-white';
-    }
   }
 }
