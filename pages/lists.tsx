@@ -1,8 +1,8 @@
 import { Layout } from 'components/layout/layout';
-import { UserSafe, UserSliceState } from 'lib/types/user';
+import { UserSliceState } from 'lib/types/user';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentTab, setUserState } from 'state/redux/userSlice';
+import { setCurrentTab } from 'state/redux/userSlice';
 import axios from 'axios';
 import { RootState } from 'state/redux/store';
 import { useRouter } from 'next/router';

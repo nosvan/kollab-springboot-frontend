@@ -46,7 +46,7 @@ export default function TaskView(props: TaskViewProps) {
       .filter((item) => {
         if (
           item.dateTzInsensitive === dayInYYYYMMDD &&
-          item.reoccurringFlag === false &&
+          !item.reoccurringFlag &&
           item.dateTzInsensitive &&
           !item.dateRangeFlag
         ) {
@@ -77,12 +77,11 @@ export default function TaskView(props: TaskViewProps) {
     const itemPart2 = items
       .filter((item) => {
         if (!item.dateTzInsensitive) return false;
-        const longDayOfWeekOfItem =
-          weekArrayIndex[
-            dateStringYYYYMMDDtoLongDayOfWeek(item.dateTzInsensitive)
-          ];
+        const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
+          item.dateTzInsensitive
+        );
         if (
-          item.reoccurringFlag === true &&
+          item.reoccurringFlag &&
           longDayOfWeekOfItem === dayInLongDayName &&
           item.dateTzInsensitive &&
           !item.dateRangeFlag
@@ -116,17 +115,17 @@ export default function TaskView(props: TaskViewProps) {
 
   const ItemsTimeInsensitiveEventView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
-    return items
+    const dayInLongDayName = weekArrayIndex[getDay(day)];
+    const itemsPart1 = items
       .filter((itemA) => {
         if (
-          itemA.dateTzInsensitive &&
           itemA.dateRangeFlag &&
-          itemA.dateTzInsensitive == dayInYYYYMMDD
+          itemA.dateTzInsensitive === dayInYYYYMMDD &&
+          !itemA.reoccurringFlag &&
+          itemA.dateTzInsensitive
         ) {
           return true;
-        } else {
-          return false;
-        }
+        } else return false;
       })
       .map((itemB) => {
         return (
@@ -149,30 +148,67 @@ export default function TaskView(props: TaskViewProps) {
           </div>
         );
       });
+    const itemsPart2 = items
+      .filter((item) => {
+        if (!item.dateTzInsensitive) return false;
+        const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
+          item.dateTzInsensitive
+        );
+        if (
+          item.dateRangeFlag &&
+          longDayOfWeekOfItem === dayInLongDayName &&
+          item.reoccurringFlag &&
+          item.dateTzInsensitive
+        ) {
+          return true;
+        } else return false;
+      })
+      .map((item) => {
+        return (
+          <div
+            key={item.id}
+            onClick={() => handleItemClick(item)}
+            className={`flex flex-row items-center space-x-0.5 rounded-md
+            justify-start text-black ${itemTypeStyling(
+              item.itemType
+            )} cursor-pointer ${styles.mobilePadding}`}
+          >
+            <MdDateRange className={`${styles.iconStyle}`}></MdDateRange>
+            <span
+              className={`text-xs truncate ${
+                !item.active ? 'line-through' : ''
+              }`}
+            >
+              {item.name}
+            </span>
+          </div>
+        );
+      });
+    return [...itemsPart1, ...itemsPart2];
   };
 
   const ItemsTimeSensitiveTaskView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
-    return items
-      .filter((itemA) => {
+    const dayInLongDayName = weekArrayIndex[getDay(day)];
+    const itemsPart1 = items
+      .filter((item) => {
         if (
-          itemA.dateTzSensitive &&
-          !itemA.dateRangeFlag &&
-          dateToYYYYMMDD(itemA.dateTzSensitive) == dayInYYYYMMDD
+          !item.reoccurringFlag &&
+          item.dateTzSensitive &&
+          !item.dateRangeFlag &&
+          dateToYYYYMMDD(item.dateTzSensitive) == dayInYYYYMMDD
         ) {
           return true;
-        } else {
-          return false;
-        }
+        } else return false;
       })
-      .map((itemB) => {
+      .map((item) => {
         return (
           <div
-            key={itemB.id}
-            onClick={() => handleItemClick(itemB)}
+            key={item.id}
+            onClick={() => handleItemClick(item)}
             className={`flex flex-row items-center space-x-0.5 rounded-md
             justify-start text-black ${itemTypeStyling(
-              itemB.itemType
+              item.itemType
             )} cursor-pointer ${styles.mobilePadding}`}
           >
             <span className="flex flex-row">
@@ -183,38 +219,79 @@ export default function TaskView(props: TaskViewProps) {
             </span>
             <span
               className={`text-xs truncate ${
-                !itemB.active ? 'line-through' : ''
+                !item.active ? 'line-through' : ''
               }`}
             >
-              {itemB.name}
+              {item.name}
             </span>
           </div>
         );
       });
+    const itemsPart2 = items
+      .filter((item) => {
+        if (
+          item.reoccurringFlag &&
+          item.dateTzSensitive &&
+          !item.dateRangeFlag &&
+          dateStringYYYYMMDDtoLongDayOfWeek(
+            dateToYYYYMMDD(item.dateTzSensitive)
+          ) === dayInLongDayName
+        ) {
+          return true;
+        } else return false;
+      })
+      .map((item) => {
+        return (
+          <div
+            key={item.id}
+            onClick={() => handleItemClick(item)}
+            className={`flex flex-row items-center space-x-0.5 rounded-md
+            justify-start text-black ${itemTypeStyling(
+              item.itemType
+            )} cursor-pointer ${styles.mobilePadding}`}
+          >
+            <span className="flex flex-row">
+              <BiCalendarStar
+                className={`${styles.iconStyle}`}
+              ></BiCalendarStar>
+              <TbClock className={`${styles.iconStyle}`}></TbClock>
+            </span>
+            <span
+              className={`text-xs truncate ${
+                !item.active ? 'line-through' : ''
+              }`}
+            >
+              {item.name}
+            </span>
+          </div>
+        );
+      });
+    return [...itemsPart1, ...itemsPart2];
   };
 
   const ItemsTimeSensitiveEventView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
-    return items
-      .filter((itemA) => {
+    const dayInLongDayName = weekArrayIndex[getDay(day)];
+    const itemsPart1 = items
+      .filter((item) => {
         if (
-          itemA.dateTzSensitive &&
-          itemA.dateRangeFlag &&
-          dateToYYYYMMDD(itemA.dateTzSensitive) == dayInYYYYMMDD
+          !item.reoccurringFlag &&
+          item.dateTzSensitive &&
+          item.dateRangeFlag &&
+          item.dateTzSensitiveEnd &&
+          dateToYYYYMMDD(item.dateTzSensitive) == dayInYYYYMMDD
         ) {
           return true;
-        } else {
-          return false;
-        }
+        } else return false;
       })
-      .map((itemB) => {
+      .map((item) => {
         return (
           <div
-            key={itemB.id}
-            onClick={() => handleItemClick(itemB)}
+            key={item.id}
+            onClick={() => handleItemClick(item)}
             className={`flex flex-row items-center space-x-0.5 rounded-md
             justify-start text-black ${itemTypeStyling(
-              itemB.itemType
+              item.itemType
             )} cursor-pointer ${styles.mobilePadding}`}
           >
             <span className="flex flex-row">
@@ -225,14 +302,55 @@ export default function TaskView(props: TaskViewProps) {
             </span>
             <span
               className={`text-xs truncate ${
-                !itemB.active ? 'line-through' : ''
+                !item.active ? 'line-through' : ''
               }`}
             >
-              {itemB.name}
+              {item.name}
             </span>
           </div>
         );
       });
+    const itemsPart2 = items
+      .filter((item) => {
+        if (
+          item.reoccurringFlag &&
+          item.dateTzSensitive &&
+          item.dateRangeFlag &&
+          item.dateTzSensitiveEnd &&
+          dateStringYYYYMMDDtoLongDayOfWeek(
+            dateToYYYYMMDD(item.dateTzSensitive)
+          ) === dayInLongDayName
+        ) {
+          return true;
+        } else return false;
+      })
+      .map((item) => {
+        return (
+          <div
+            key={item.id}
+            onClick={() => handleItemClick(item)}
+            className={`flex flex-row items-center space-x-0.5 rounded-md
+            justify-start text-black ${itemTypeStyling(
+              item.itemType
+            )} cursor-pointer ${styles.mobilePadding}`}
+          >
+            <span className="flex flex-row">
+              <MdDateRange
+                className={`${styles.iconStyle} pb-0.5`}
+              ></MdDateRange>
+              <TbClock className={`${styles.iconStyle}`}></TbClock>
+            </span>
+            <span
+              className={`text-xs truncate ${
+                !item.active ? 'line-through' : ''
+              }`}
+            >
+              {item.name}
+            </span>
+          </div>
+        );
+      });
+    return [...itemsPart1, ...itemsPart2];
   };
 
   const taskViewSpring = useSpring({

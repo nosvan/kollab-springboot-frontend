@@ -24,18 +24,6 @@ export function dateToDayName(date: Date): string {
 export function dateToLongDayName(date: Date): string {
   return date.toLocaleString('default', { weekday: 'long' });
 }
-export function dateYYYYMMDDStringToLongDayOfWeek(date: string) {
-  const dateSplit = date.split('-');
-  return weekArrayIndex[
-    getDay(
-      new Date(
-        parseInt(dateSplit[0]),
-        parseInt(dateSplit[1]),
-        parseInt(dateSplit[2])
-      )
-    )
-  ];
-}
 
 export function dateToYYYYMMDD(date: Date): string {
   const dateInParts = new Date(date)
@@ -48,31 +36,20 @@ export function dateToYYYYMMDD(date: Date): string {
   return `${dateInParts[2]}-${dateInParts[0]}-${dateInParts[1]}`;
 }
 
-export function dateToDD(date: Date): string {
-  const dateInParts = new Date(date)
-    .toLocaleDateString('locale', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-    .split('/');
-  return `${dateInParts[1]}`;
-}
-
 export function dateStringYYYYMMDDtoMMDDYYYYwithSlashes(date: string): string {
   const dateInParts = date.split('-');
   return `${dateInParts[1]}/${dateInParts[2]}/${dateInParts[0]}`;
 }
 
-export function dateStringYYYYMMDDtoLongDayOfWeek(date: string): number {
+export function dateStringYYYYMMDDtoLongDayOfWeek(date: string): string {
   const dateSplit = date.split('-');
   const month = () => {
     if (parseInt(dateSplit[1]) === 0) return 0;
     else return parseInt(dateSplit[1]) - 1;
   };
-  return getDay(
-    new Date(parseInt(dateSplit[0]), month(), parseInt(dateSplit[2]))
-  );
+  return weekArrayIndex[
+    getDay(new Date(parseInt(dateSplit[0]), month(), parseInt(dateSplit[2])))
+  ];
 }
 
 export function getTimeCeiling(

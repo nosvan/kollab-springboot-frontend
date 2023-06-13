@@ -1,5 +1,4 @@
 import { Layout } from 'components/layout/layout';
-import { UserSafe } from 'lib/types/user';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
