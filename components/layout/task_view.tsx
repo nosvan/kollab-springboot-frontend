@@ -77,7 +77,7 @@ export default function TaskView(props: TaskViewProps) {
 
   const ItemsTimeInsensitiveTaskView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
-    const dayInYYYYMMDDSplit = dayInYYYYMMDD.split('-');
+    const dayInYYYYMMDDSplit = dayInYYYYMMDD.split('-').map(Number);
     const dayInLongDayName = weekArrayIndex[getDay(day)];
     return [
       ...items
@@ -107,17 +107,19 @@ export default function TaskView(props: TaskViewProps) {
           const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
             item.dateTzInsensitive
           );
-          const itemDateTzInsensitiveSplit = item.dateTzInsensitive.split('-');
+          const itemDateTzInsensitiveSplit = item.dateTzInsensitive
+            .split('-')
+            .map(Number);
           if (
             new Date(
-              parseInt(itemDateTzInsensitiveSplit[0]),
-              parseInt(itemDateTzInsensitiveSplit[1]),
-              parseInt(itemDateTzInsensitiveSplit[2])
+              itemDateTzInsensitiveSplit[0],
+              itemDateTzInsensitiveSplit[1],
+              itemDateTzInsensitiveSplit[2]
             ) <=
               new Date(
-                parseInt(dayInYYYYMMDDSplit[0]),
-                parseInt(dayInYYYYMMDDSplit[1]),
-                parseInt(dayInYYYYMMDDSplit[2])
+                dayInYYYYMMDDSplit[0],
+                dayInYYYYMMDDSplit[1],
+                dayInYYYYMMDDSplit[2]
               ) &&
             item.reoccurringFlag &&
             longDayOfWeekOfItem === dayInLongDayName &&
@@ -142,7 +144,7 @@ export default function TaskView(props: TaskViewProps) {
 
   const ItemsTimeInsensitiveEventView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
-    const dayInYYYYMMDDSplit = dayInYYYYMMDD.split('-');
+    const dayInYYYYMMDDSplit = dayInYYYYMMDD.split('-').map(Number);
     const dayInLongDayName = weekArrayIndex[getDay(day)];
     return [
       ...items
@@ -172,17 +174,19 @@ export default function TaskView(props: TaskViewProps) {
           const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
             item.dateTzInsensitive
           );
-          const itemDateTzInsensitiveSplit = item.dateTzInsensitive.split('-');
+          const itemDateTzInsensitiveSplit = item.dateTzInsensitive
+            .split('-')
+            .map(Number);
           if (
             new Date(
-              parseInt(itemDateTzInsensitiveSplit[0]),
-              parseInt(itemDateTzInsensitiveSplit[1]),
-              parseInt(itemDateTzInsensitiveSplit[2])
+              itemDateTzInsensitiveSplit[0],
+              itemDateTzInsensitiveSplit[1],
+              itemDateTzInsensitiveSplit[2]
             ) <=
               new Date(
-                parseInt(dayInYYYYMMDDSplit[0]),
-                parseInt(dayInYYYYMMDDSplit[1]),
-                parseInt(dayInYYYYMMDDSplit[2])
+                dayInYYYYMMDDSplit[0],
+                dayInYYYYMMDDSplit[1],
+                dayInYYYYMMDDSplit[2]
               ) &&
             item.dateRangeFlag &&
             longDayOfWeekOfItem === dayInLongDayName &&
