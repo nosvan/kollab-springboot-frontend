@@ -14,7 +14,7 @@ import { animated, useSpring } from '@react-spring/web';
 import NewItem from 'components/item/create_item';
 import axios from 'axios';
 import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
-import { getDay } from 'date-fns';
+import { getDate, getDay } from 'date-fns';
 import TimeInsensitiveTaskItem from 'components/item/time_insensitive_task_item';
 import TimeInsensitiveEventItem from 'components/item/time_insensitive_event_item';
 import TimeSensitiveTaskItem from 'components/item/time_sensitive_task_item';
@@ -77,6 +77,7 @@ export default function TaskView(props: TaskViewProps) {
 
   const ItemsTimeInsensitiveTaskView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
+    const dayInYYYYMMDDSplit = dayInYYYYMMDD.split('-');
     const dayInLongDayName = weekArrayIndex[getDay(day)];
     return [
       ...items
@@ -106,7 +107,18 @@ export default function TaskView(props: TaskViewProps) {
           const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
             item.dateTzInsensitive
           );
+          const itemDateTzInsensitiveSplit = item.dateTzInsensitive.split('-');
           if (
+            new Date(
+              parseInt(itemDateTzInsensitiveSplit[0]),
+              parseInt(itemDateTzInsensitiveSplit[1]),
+              parseInt(itemDateTzInsensitiveSplit[2])
+            ) <=
+              new Date(
+                parseInt(dayInYYYYMMDDSplit[0]),
+                parseInt(dayInYYYYMMDDSplit[1]),
+                parseInt(dayInYYYYMMDDSplit[2])
+              ) &&
             item.reoccurringFlag &&
             longDayOfWeekOfItem === dayInLongDayName &&
             item.dateTzInsensitive &&
@@ -130,6 +142,7 @@ export default function TaskView(props: TaskViewProps) {
 
   const ItemsTimeInsensitiveEventView = (day: Date, items: ItemSafe[]) => {
     const dayInYYYYMMDD = dateToYYYYMMDD(day);
+    const dayInYYYYMMDDSplit = dayInYYYYMMDD.split('-');
     const dayInLongDayName = weekArrayIndex[getDay(day)];
     return [
       ...items
@@ -159,7 +172,18 @@ export default function TaskView(props: TaskViewProps) {
           const longDayOfWeekOfItem = dateStringYYYYMMDDtoLongDayOfWeek(
             item.dateTzInsensitive
           );
+          const itemDateTzInsensitiveSplit = item.dateTzInsensitive.split('-');
           if (
+            new Date(
+              parseInt(itemDateTzInsensitiveSplit[0]),
+              parseInt(itemDateTzInsensitiveSplit[1]),
+              parseInt(itemDateTzInsensitiveSplit[2])
+            ) <=
+              new Date(
+                parseInt(dayInYYYYMMDDSplit[0]),
+                parseInt(dayInYYYYMMDDSplit[1]),
+                parseInt(dayInYYYYMMDDSplit[2])
+              ) &&
             item.dateRangeFlag &&
             longDayOfWeekOfItem === dayInLongDayName &&
             item.reoccurringFlag &&
@@ -211,6 +235,7 @@ export default function TaskView(props: TaskViewProps) {
           if (
             item.reoccurringFlag &&
             item.dateTzSensitive &&
+            new Date(item.dateTzSensitive) <= day &&
             !item.dateRangeFlag &&
             dateStringYYYYMMDDtoLongDayOfWeek(
               dateToYYYYMMDD(item.dateTzSensitive)
@@ -263,6 +288,7 @@ export default function TaskView(props: TaskViewProps) {
           if (
             item.reoccurringFlag &&
             item.dateTzSensitive &&
+            new Date(item.dateTzSensitive) <= day &&
             item.dateRangeFlag &&
             item.dateTzSensitiveEnd &&
             dateStringYYYYMMDDtoLongDayOfWeek(
