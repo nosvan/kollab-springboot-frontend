@@ -1,23 +1,44 @@
 import { animated, useSpring } from '@react-spring/web';
+import axios from 'axios';
 import { Layout } from 'components/layout/layout';
+import { SpringApiRoutes } from 'lib/api/spring_api_routes';
+import { TabName } from 'lib/types/ui';
 import { UserSafe } from 'lib/types/user';
-import { useRouter } from 'next/router';
+import { getCurrentUser } from 'pages';
 import { useEffect } from 'react';
 import { TbArrowBigRight } from 'react-icons/tb';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'state/redux/store';
 import { setUserState } from 'state/redux/userSlice';
 
 export default function Settings({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
-  const router = useRouter();
+  const userState = useSelector((state: RootState) => state.user_store);
 
   useEffect(() => {
-    if (!true) {
-      router.push('/');
-      return;
+    async function getCurrentUser() {
+      try {
+        await axios({
+          method: 'GET',
+          url: SpringApiRoutes.CURRENT_USER,
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }).then((res) => {
+          dispatch(
+            setUserState({
+              ...res.data,
+              isLoggedIn: true,
+              currentTab: TabName.SETTINGS,
+            })
+          );
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
-    dispatch(setUserState({ ...user, currentTab: 'settings' }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!userState.user.isLoggedIn) {
+      getCurrentUser();
+    }
   }, []);
 
   const settingsSpring = useSpring({

@@ -142,7 +142,6 @@ export default function Login(props: LoginProps) {
         },
         withCredentials: true,
       }).then((res) => {
-        console.log(res.data);
         dispatch(
           setUserState({
             ...res.data,

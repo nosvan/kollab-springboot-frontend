@@ -6,6 +6,7 @@ export const SpringApiRoutes = {
   REGISTER: host + '/register',
   LOGOUT: host + '/logout',
   USERS: host_api + '/users',
+  CURRENT_USER: host + '/get-current-user',
 };
 
 export const SpringItemApiRoutes = {

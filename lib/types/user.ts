@@ -30,7 +30,6 @@ export type UserSafe = {
   firstName: string;
   lastName: string;
   email: string;
-  isLoggedIn: boolean;
 };
 
 // iron session user

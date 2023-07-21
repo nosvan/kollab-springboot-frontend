@@ -2,7 +2,7 @@ import { Layout } from 'components/layout/layout';
 import { UserSliceState } from 'lib/types/user';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCurrentTab } from 'state/redux/userSlice';
+import { setCurrentTab, setUserState } from 'state/redux/userSlice';
 import axios from 'axios';
 import { RootState } from 'state/redux/store';
 import { useRouter } from 'next/router';
@@ -26,8 +26,12 @@ import {
 import { ListSafe, ListSliceState } from 'lib/types/list';
 import NewList from 'components/list/create_list';
 import EditList from 'components/layout/edit_list_ui';
-import { SpringListApiRoutes } from 'lib/api/spring_api_routes';
+import {
+  SpringApiRoutes,
+  SpringListApiRoutes,
+} from 'lib/api/spring_api_routes';
 import { TabName } from 'lib/types/ui';
+import { getCurrentUser } from 'pages';
 
 export default function Lists() {
   const dispatch = useDispatch();
@@ -38,11 +42,34 @@ export default function Lists() {
   const userState: UserSliceState = useSelector(
     (state: RootState) => state.user_store
   );
+
   useEffect(() => {
-    if (!true) {
-      router.push('/');
-      return;
+    async function getCurrentUser() {
+      try {
+        await axios({
+          method: 'GET',
+          url: SpringApiRoutes.CURRENT_USER,
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }).then((res) => {
+          dispatch(
+            setUserState({
+              ...res.data,
+              isLoggedIn: true,
+              currentTab: TabName.LISTS,
+            })
+          );
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
+    if (!userState.user.isLoggedIn) {
+      getCurrentUser();
+    }
+  }, []);
+
+  useEffect(() => {
     dispatch(setCurrentTab(TabName.LISTS));
     async function getUserLists() {
       await axios({

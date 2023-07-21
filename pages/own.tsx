@@ -19,19 +19,42 @@ import axios from 'axios';
 import { TabName } from 'lib/types/ui';
 import { animated, useSpring } from '@react-spring/web';
 import { ItemSafe } from 'lib/types/item';
-import { SpringItemApiRoutes } from 'lib/api/spring_api_routes';
+import {
+  SpringApiRoutes,
+  SpringItemApiRoutes,
+} from 'lib/api/spring_api_routes';
+import { getCurrentUser } from 'pages';
 
 export default function Own() {
   const dispatch = useDispatch();
   const router = useRouter();
   const ownState = useSelector((state: RootState) => state.own_store);
   const userState = useSelector((state: RootState) => state.user_store);
+
   useEffect(() => {
-    if (!true) {
-      router.push('/');
-      return;
+    async function getCurrentUser() {
+      try {
+        await axios({
+          method: 'GET',
+          url: SpringApiRoutes.CURRENT_USER,
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }).then((res) => {
+          dispatch(
+            setUserState({
+              ...res.data,
+              isLoggedIn: true,
+              currentTab: TabName.OWN,
+            })
+          );
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
-    dispatch(setCurrentTab(TabName.OWN));
+    if (!userState.user.isLoggedIn) {
+      getCurrentUser();
+    }
   }, []);
 
   useEffect(() => {

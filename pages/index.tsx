@@ -1,5 +1,5 @@
 import { Layout } from 'components/layout/layout';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { setUserState } from 'state/redux/userSlice';
 import { UserSafe } from 'lib/types/user';
@@ -10,19 +10,53 @@ import { TbArrowBigRight } from 'react-icons/tb';
 import ModalPopup from 'components/layout/modal';
 import NewItem from 'components/item/create_item';
 import NewList from 'components/list/create_list';
+import { RootState } from 'state/redux/store';
 import axios from 'axios';
 import { SpringApiRoutes } from 'lib/api/spring_api_routes';
 
+export async function getCurrentUser() {
+  try {
+    await axios({
+      method: 'GET',
+      url: SpringApiRoutes.CURRENT_USER,
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true,
+    }).then((res) => {
+      return res.data;
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export default function Index({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
-  const router = useRouter();
+  const userState = useSelector((state: RootState) => state.user_store);
 
   useEffect(() => {
-    if (!true) {
-      router.push('/');
-      return;
+    async function getCurrentUser() {
+      try {
+        await axios({
+          method: 'GET',
+          url: SpringApiRoutes.CURRENT_USER,
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }).then((res) => {
+          dispatch(
+            setUserState({
+              ...res.data,
+              isLoggedIn: true,
+              currentTab: TabName.HOME,
+            })
+          );
+        });
+      } catch (error) {
+        console.log(error);
+      }
     }
-    dispatch(setUserState({ ...user, currentTab: TabName.HOME }));
+    if (!userState.user.isLoggedIn) {
+      getCurrentUser();
+    }
   }, []);
 
   const [createNewTypeMode, setCreateNewTypeMode] = useState(false);
