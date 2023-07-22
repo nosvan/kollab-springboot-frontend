@@ -19,6 +19,7 @@ interface RegisterProps {
 }
 
 export default function Register(props: RegisterProps) {
+  const { setSelection } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -218,8 +219,7 @@ export default function Register(props: RegisterProps) {
         if (res.data.message === 'Email already exists') {
           alert('Email already exists');
         } else {
-          dispatch(setCurrentTab(TabName.HOME));
-          router.push('/');
+          setSelection('login');
         }
       });
     } catch (error) {

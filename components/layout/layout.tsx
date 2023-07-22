@@ -129,14 +129,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </div>
             {/* footer on small screens */}
             <Footer></Footer>
-            {userState.user.currentTab == TabName.LISTS && createNewTypeMode && (
-              <ModalPopup
-                modalId="create_list_modal"
-                modalOpen={setCreateNewTypeMode}
-              >
-                <NewList setCreateNewTypeMode={setCreateNewTypeMode} />
-              </ModalPopup>
-            )}
+            {userState.user.currentTab == TabName.LISTS &&
+              createNewTypeMode && (
+                <ModalPopup
+                  modalId="create_list_modal"
+                  modalOpen={setCreateNewTypeMode}
+                >
+                  <NewList setCreateNewTypeMode={setCreateNewTypeMode} />
+                </ModalPopup>
+              )}
           </div>
         </div>
       )}
