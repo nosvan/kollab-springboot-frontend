@@ -2,10 +2,12 @@ import { useSpring, animated } from '@react-spring/web';
 import axios from 'axios';
 import { ApiRoutes } from 'lib/api/api_routes';
 import { SpringApiRoutes } from 'lib/api/spring_api_routes';
+import { TabName } from 'lib/types/ui';
 import { UserRegister, UserRegisterError } from 'lib/types/user';
+import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setUserState } from 'state/redux/userSlice';
+import { setCurrentTab } from 'state/redux/userSlice';
 import {
   matchYupErrorStateWithCompErrorState,
   trimStringsInObjectShallow,
@@ -18,6 +20,7 @@ interface RegisterProps {
 
 export default function Register(props: RegisterProps) {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const [formValues, setFormValues] = useState<UserRegister>({
     firstName: '',
@@ -202,7 +205,6 @@ export default function Register(props: RegisterProps) {
     if (!(JSON.stringify(yupValidateResult) === JSON.stringify(formValues))) {
       return;
     }
-    console.log(formValues);
     try {
       await axios({
         method: 'post',
@@ -213,11 +215,12 @@ export default function Register(props: RegisterProps) {
         },
         withCredentials: true,
       }).then((res) => {
-        console.log(res);
         if (res.data.message === 'Email already exists') {
-          return;
+          alert('Email already exists');
+        } else {
+          dispatch(setCurrentTab(TabName.HOME));
+          router.push('/');
         }
-        dispatch(setUserState(res.data));
       });
     } catch (error) {
       console.log(error);
