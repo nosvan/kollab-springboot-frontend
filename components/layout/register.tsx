@@ -216,8 +216,8 @@ export default function Register(props: RegisterProps) {
         },
         withCredentials: true,
       }).then((res) => {
-        if (res.data.message === 'Email already exists') {
-          alert('Email already exists');
+        if (res.data.message === 'User already exists') {
+          alert('User already exists');
         } else {
           setSelection('login');
         }
