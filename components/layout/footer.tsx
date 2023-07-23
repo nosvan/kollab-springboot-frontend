@@ -2,12 +2,15 @@ import { TabName } from 'lib/types/ui';
 import { useRouter } from 'next/router';
 import { FaLayerGroup } from 'react-icons/fa';
 import { TbHome2, TbUser, TbUsers } from 'react-icons/tb';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'state/redux/store';
+import { setCurrentTab } from 'state/redux/userSlice';
 
 export default function Footer() {
   const user = useSelector((state: RootState) => state.user_store.user);
   const router = useRouter();
+  const dispatch = useDispatch();
+
   return (
     <div
       className="flex flex-row justify-between fixed bottom-0
@@ -62,8 +65,27 @@ export default function Footer() {
 
   function handleActiveTab(tab: string) {
     if (user.currentTab.toLowerCase() != tab.toLowerCase()) {
-      if (tab == TabName.HOME) router.push('/');
-      else router.push('/' + tab.toLowerCase());
+      switch (tab) {
+        case TabName.HOME:
+          dispatch(setCurrentTab(tab));
+          router.push('/');
+          break;
+        case TabName.OWN:
+          dispatch(setCurrentTab(tab));
+          router.push(TabName.OWN);
+          break;
+        case TabName.LISTS:
+          dispatch(setCurrentTab(tab));
+          router.push(TabName.LISTS);
+          break;
+        case TabName.SETTINGS:
+          dispatch(setCurrentTab(tab));
+          router.push(TabName.SETTINGS);
+          break;
+        default:
+          router.push('/');
+          break;
+      }
     }
   }
 }
