@@ -14,7 +14,6 @@ import { setCurrentTab, setUserState } from 'state/redux/userSlice';
 export default function Settings({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
   const userState = useSelector((state: RootState) => state.user_store);
-  dispatch(setCurrentTab(TabName.SETTINGS));
 
   useEffect(() => {
     async function getCurrentUser() {

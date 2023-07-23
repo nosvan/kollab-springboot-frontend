@@ -29,7 +29,6 @@ export default function Own() {
   const router = useRouter();
   const ownState = useSelector((state: RootState) => state.own_store);
   const userState = useSelector((state: RootState) => state.user_store);
-  dispatch(setCurrentTab(TabName.OWN));
 
   useEffect(() => {
     async function getCurrentUser() {

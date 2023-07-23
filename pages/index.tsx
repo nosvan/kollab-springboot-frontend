@@ -32,7 +32,6 @@ export async function getCurrentUser() {
 export default function Index({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
   const userState = useSelector((state: RootState) => state.user_store);
-  dispatch(setCurrentTab(TabName.HOME));
 
   useEffect(() => {
     async function getCurrentUser() {

@@ -42,7 +42,6 @@ export default function Lists() {
   const userState: UserSliceState = useSelector(
     (state: RootState) => state.user_store
   );
-  dispatch(setCurrentTab(TabName.LISTS));
 
   useEffect(() => {
     async function getCurrentUser() {
