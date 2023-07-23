@@ -31,7 +31,6 @@ import {
   SpringListApiRoutes,
 } from 'lib/api/spring_api_routes';
 import { TabName } from 'lib/types/ui';
-import { getCurrentUser } from 'pages';
 
 export default function Lists() {
   const dispatch = useDispatch();
@@ -70,7 +69,6 @@ export default function Lists() {
   }, []);
 
   useEffect(() => {
-    dispatch(setCurrentTab(TabName.LISTS));
     async function getUserLists() {
       await axios({
         method: 'get',

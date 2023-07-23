@@ -1,4 +1,5 @@
 const host = 'https://kollab-backend-j6k5s47gwq-uc.a.run.app';
+// const host = 'http://localhost:8080';
 const api = '/api';
 const host_api = `${host}${api}`;
 export const SpringApiRoutes = {

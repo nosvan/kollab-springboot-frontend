@@ -22,10 +22,10 @@ export const userSlice = createSlice({
       state.user = { ...state.user, ...action.payload };
     },
     setLoggedInStatus: (state, action) => {
-      state.user.isLoggedIn = action.payload;
+      state.user = { ...state.user, isLoggedIn: action.payload };
     },
     setCurrentTab: (state, action) => {
-      state.user.currentTab = action.payload;
+      state.user = { ...state.user, currentTab: action.payload };
     },
     setCreateNewTypeMode: (state, action) => {
       state.createNewTypeMode = action.payload;
