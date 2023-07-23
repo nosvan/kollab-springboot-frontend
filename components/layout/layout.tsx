@@ -86,15 +86,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   >
                     <div className="text-white">Log in</div>
                   </div>
-                  <div className="text-center text-white text-sm space-x-1">
-                    <span>forgot password?</span>
-                    <span
-                      className="underline cursor-pointer"
-                      onClick={() => setSelection('reset')}
-                    >
-                      login with email
-                    </span>
-                  </div>
+                  {false && (
+                    <div className="text-center text-white text-sm space-x-1">
+                      <span>forgot password?</span>
+                      <span
+                        className="underline cursor-pointer"
+                        onClick={() => setSelection('reset')}
+                      >
+                        login with email
+                      </span>
+                    </div>
+                  )}
                 </animated.div>
               )}
               {selection === 'login' && (
