@@ -9,11 +9,12 @@ import { useEffect } from 'react';
 import { TbArrowBigRight } from 'react-icons/tb';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'state/redux/store';
-import { setUserState } from 'state/redux/userSlice';
+import { setCurrentTab, setUserState } from 'state/redux/userSlice';
 
 export default function Settings({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
   const userState = useSelector((state: RootState) => state.user_store);
+  dispatch(setCurrentTab(TabName.SETTINGS));
 
   useEffect(() => {
     async function getCurrentUser() {

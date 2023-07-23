@@ -7,7 +7,7 @@ import { RootState } from 'state/redux/store';
 import { setCurrentTab } from 'state/redux/userSlice';
 
 export default function SideBar() {
-  const user = useSelector((state: RootState) => state.user_store.user);
+  const userStore = useSelector((state: RootState) => state.user_store);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -27,7 +27,7 @@ export default function SideBar() {
           handleActiveTab(TabName.HOME);
         }}
         className={`${
-          user.currentTab == TabName.HOME
+          userStore.user.currentTab == TabName.HOME
             ? 'text-white font-light'
             : 'text-gray-400 font-extralight'
         } flex flex-row items-center text-lg cursor-pointer p-1 hover:text-white  rounded-3xl hover:bg-stone-800`}
@@ -35,28 +35,25 @@ export default function SideBar() {
         <TbHome2 size={32} strokeWidth={'1'} />
         <div className="hidden md:block">{TabName.HOME}</div>
       </div>
-      {/* user */}
-      {true && (
-        <div
-          onClick={() => {
-            handleActiveTab(TabName.OWN);
-          }}
-          className={`${
-            user.currentTab == TabName.OWN
-              ? 'text-white font-light'
-              : 'text-gray-400 font-extralight'
-          } flex flex-row items-center text-lg cursor-pointer p-1 hover:text-white  rounded-3xl hover:bg-stone-800`}
-        >
-          <TbUser size={32} strokeWidth={'1'} />
-          <div className="hidden md:block">{TabName.OWN}</div>
-        </div>
-      )}
+      <div
+        onClick={() => {
+          handleActiveTab(TabName.OWN);
+        }}
+        className={`${
+          userStore.user.currentTab == TabName.OWN
+            ? 'text-white font-light'
+            : 'text-gray-400 font-extralight'
+        } flex flex-row items-center text-lg cursor-pointer p-1 hover:text-white  rounded-3xl hover:bg-stone-800`}
+      >
+        <TbUser size={32} strokeWidth={'1'} />
+        <div className="hidden md:block">{TabName.OWN}</div>
+      </div>
       <div
         onClick={() => {
           handleActiveTab(TabName.LISTS);
         }}
         className={`${
-          user.currentTab == TabName.LISTS
+          userStore.user.currentTab == TabName.LISTS
             ? 'text-white font-light'
             : 'text-gray-400 font-extralight'
         } flex flex-row items-center text-lg cursor-pointer p-1 hover:text-white  rounded-3xl hover:bg-stone-800`}
@@ -70,7 +67,7 @@ export default function SideBar() {
             handleActiveTab(TabName.SETTINGS);
           }}
           className={`${
-            user.currentTab == TabName.SETTINGS
+            userStore.user.currentTab == TabName.SETTINGS
               ? 'text-white font-light'
               : 'text-gray-400 font-extralight'
           } flex flex-row items-center text-lg cursor-pointer p-1 hover:text-white  rounded-3xl hover:bg-stone-800`}
@@ -83,7 +80,7 @@ export default function SideBar() {
   );
 
   function handleActiveTab(tab: string) {
-    if (user.currentTab.toLowerCase() != tab.toLowerCase()) {
+    if (userStore.user.currentTab.toLowerCase() != tab.toLowerCase()) {
       switch (tab) {
         case TabName.HOME:
           dispatch(setCurrentTab(tab));

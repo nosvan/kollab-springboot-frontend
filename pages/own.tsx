@@ -23,13 +23,13 @@ import {
   SpringApiRoutes,
   SpringItemApiRoutes,
 } from 'lib/api/spring_api_routes';
-import { getCurrentUser } from 'pages';
 
 export default function Own() {
   const dispatch = useDispatch();
   const router = useRouter();
   const ownState = useSelector((state: RootState) => state.own_store);
   const userState = useSelector((state: RootState) => state.user_store);
+  dispatch(setCurrentTab(TabName.OWN));
 
   useEffect(() => {
     async function getCurrentUser() {

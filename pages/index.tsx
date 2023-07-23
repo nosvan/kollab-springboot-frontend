@@ -1,7 +1,7 @@
 import { Layout } from 'components/layout/layout';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { setUserState } from 'state/redux/userSlice';
+import { setCurrentTab, setUserState } from 'state/redux/userSlice';
 import { UserSafe } from 'lib/types/user';
 import { useRouter } from 'next/router';
 import { TabName } from 'lib/types/ui';
@@ -32,6 +32,7 @@ export async function getCurrentUser() {
 export default function Index({ user }: { user: UserSafe }) {
   const dispatch = useDispatch();
   const userState = useSelector((state: RootState) => state.user_store);
+  dispatch(setCurrentTab(TabName.HOME));
 
   useEffect(() => {
     async function getCurrentUser() {
