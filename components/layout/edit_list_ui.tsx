@@ -21,6 +21,7 @@ export default function EditList(props: { listId: number }) {
     (state: RootState) => state.user_store
   );
   const [passCodeMode, setNewPasscodeMode] = useState<boolean>(false);
+  const [deleteListMode, setDeleteListMode] = useState<boolean>(false);
   const initialPasscodeFormValues: passcodeFormValues = {
     userId: userState.user.id,
     listId: props.listId,
@@ -51,7 +52,7 @@ export default function EditList(props: { listId: number }) {
 
   return (
     <div className="flex flex-col space-y-1 mx-1 pl-1">
-      <div className="bg-stone-900 p-1 rounded-xl">
+      <div className="bg-stone-900 p-1 rounded-xl space-y-1">
         <div className="p-1 text-2xl">List Settings</div>
         <div className="flex">
           {!passCodeMode && (
@@ -157,6 +158,13 @@ export default function EditList(props: { listId: number }) {
                   </div>
                 </div>
               </form>
+            </div>
+          )}
+        </div>
+        <div className="flex">
+          {!deleteListMode && (
+            <div onClick={()=> setDeleteListMode(true)} className='bg-stone-800 hover:bg-stone-700 p-1 rounded-xl cursor-pointer'>
+              Delete List
             </div>
           )}
         </div>
